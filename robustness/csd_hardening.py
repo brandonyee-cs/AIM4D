@@ -1,22 +1,3 @@
-"""Hardening the critical-slowing-down (CSD) early-warning component against the
-standard EWS critiques (Boettiger-Hastings prosecutor's fallacy; Dakos et al.
-surrogate testing; Deb et al. short-series power).
-
-  detection_vs_fp : CSD detection rate in episode pre-onset windows vs the
-                    false-positive rate on stable democracies (the prosecutor's-
-                    fallacy defense -- detection must beat the FP rate).
-  by_type         : detection split by gradual backsliding vs coup (CSD is
-                    expected to fire for gradual onsets, not noise-driven coups).
-  three_surrogate : ARMA(1) (production), phase-randomized, and bootstrap
-                    surrogates -- agreement across nulls.
-  per_indicator   : which indicator (dominant eigenvalue, cross-correlation,
-                    total variance, variance, AR1) carries the signal.
-  window_sensitivity : detection rate across rolling-window sizes.
-
-Reuses load_residuals, multivariate_csd, rolling_stats from stage5_ews.estimate
-so indicators are computed exactly as in production.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
@@ -126,9 +107,6 @@ def episode_rate(indicator="dom_eig", method="arma", window=WINDOW, subset=None)
 
 
 def yearrate(pairs, indicator="dom_eig", method="arma", window=WINDOW):
-    """Per-country-year significance rate over the given (name, lo, hi) windows,
-    counting only years where the indicator is defined -- matched exposure so the
-    pre-onset detection rate and the stable false-positive rate are comparable."""
     flagged = total = 0
     for name, lo, hi in pairs:
         ind = indicators(name, window=window)

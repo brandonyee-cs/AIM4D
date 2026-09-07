@@ -1,11 +1,3 @@
-"""
-Persist the Figure 7 reliability-diagram bins: five equal-width predicted-risk
-bins on the strict OOS slice (year > 2019, post-onset country-years excluded),
-each with mean predicted risk, observed onset frequency, and bin count.
-
-Output: robustness/reliability_bins.csv
-"""
-
 import os
 import sys
 

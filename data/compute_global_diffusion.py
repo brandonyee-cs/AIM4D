@@ -1,25 +1,3 @@
-"""
-F4: Global PageRank-weighted backsliding-exposure feature.
-
-Replaces (or supplements) the existing neighbor-mean network_exposure score
-from Stage 4 with a global diffusion measure motivated by Schmotz & Selvik
-(2025), who show that backsliding clusters globally (alliance + trade) rather
-than only locally.
-
-For each country-year (i, t) we compute
-
-    GlobalExposure_{i,t} = sum_{j != i}  PR_j  *  poly_change_{j, t-1}
-
-where PR_j is the PageRank of country j on the union of (contiguity ∪
-alliance ∪ trade-similarity) graph for that year, and poly_change is
-country j's V-Dem polyarchy YoY change. A country surrounded by influential
-backsliders gets a high (negative-direction) score.
-
-Writes data/global_diffusion.csv with columns:
-  country_text_id, year, global_exposure_polyarchy, global_exposure_libdem,
-  pagerank, n_backsliding_neighbors
-"""
-
 import os
 import pandas as pd
 import numpy as np
@@ -73,7 +51,6 @@ def load_alliance_pairs():
 
 
 def build_graph(year, contig, alliance, vdem_iso3_set):
-    """Build undirected graph for a year combining contiguity + alliance edges."""
     G = nx.Graph()
     G.add_nodes_from(vdem_iso3_set)
     for df in [contig, alliance]:

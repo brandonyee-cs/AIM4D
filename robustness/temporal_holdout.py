@@ -1,26 +1,3 @@
-"""
-ViEWS-2024 style true-future temporal holdout evaluation.
-
-Hegre et al. 2024 (JPR / arXiv:2407.11045) canonical CV for rare-event panel
-forecasting is an EXPANDING-WINDOW ONE-SHOT temporal split holding out by
-YEAR (not country-year). We replicate that here on our existing ews_signals
-predictions to produce headline metrics defensible to ViEWS-literate reviewers.
-
-Partitioning:
-  TRAIN : year <= 2013        # fit
-  CALIB : 2014 <= year <= 2019  # tune threshold / isotonic
-  TEST  : year >= 2020          # one-shot true-future, FROZEN
-
-We compute Brier, log-loss, BSS, AUC-ROC, AUC-PR on TEST only, with
-country-cluster bootstrap CIs. This is reported alongside the k-fold and
-cluster-bootstrap CIs already in robustness/bootstrap_cis.csv — not as a
-replacement, but as the ViEWS-compatible headline.
-
-Output: robustness/temporal_holdout.csv with one row per metric.
-
-Requires: stage5_ews/ews_signals.csv with calibrated_risk + label columns.
-"""
-
 import os
 import sys
 import numpy as np

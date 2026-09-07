@@ -1,23 +1,3 @@
-"""
-Task E: real expanding-window cross-validation with full-pipeline refit.
-
-For each cutoff year in [2008, 2011, 2014, 2017], refit all five stages
-(POET factors, Kalman/DCC betas, MS-VAR HMM, INE-TARNet, EWS meta-learner) on
-data <= cutoff, then evaluate OOS AUC and AUC-PR on the next 3-year window.
-
-This is the only honest version of expanding-window CV for the AIM4D pipeline.
-The version inside Stage 5's run loop only slices a single in-sample model's
-predictions and does not refit.
-
-Folds run concurrently, each in its own detached git worktree (data/
-symlinked from the canonical checkout), so refits never touch the canonical
-stage outputs. Concurrency defaults to a RAM/CPU-derived worker count;
-override with AIM4D_PAR. Heaviest step per fold is the Stage 3 HMM.
-
-Outputs:
-  robustness/expanding_window_cv.csv  — per-fold AUC, AUC-PR, n_pos, episodes
-"""
-
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -50,7 +30,6 @@ def run_fold(cutoff):
 
 
 def evaluate_fold(cutoff, test_window_end, repo=REPO):
-    """Read ews_signals.csv, score OOS on (cutoff, test_window_end]."""
     sys.path.insert(0, REPO)
     from stage5_ews.estimate import KNOWN_EPISODES
     preonset, postonset = set(), set()

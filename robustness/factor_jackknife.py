@@ -1,38 +1,3 @@
-"""
-A1b: Within-V-Dem indicator jackknife.
-
-Tests whether Stage-1 factor-1 is a stable latent construct vs. an artifact of
-specific V-Dem indicator choices — a no-external-data robustness check that
-complements the FH/Polity replication.
-
-Scored by Tucker's congruence coefficient phi between original and refit
-factor-1 loadings (Lorenzo-Seva & ten Berge 2006: phi>=0.95 => "factors equal",
-0.85-0.94 = "fair similarity").
-
-IMPORTANT framing (see header comment in main): with a dominant first
-eigenvalue (~44% variance, large eigengap) and highly collinear V-Dem
-indicators (every top-10 loader has a retained proxy at r>0.95), near-
-invariance of factor-1 to dropping a small indicator subset is *predicted* by
-eigenvector-perturbation theory (Davis-Kahan) and is mechanically trivial.
-Tiers 1-4 therefore establish only that the factor is over-determined; the
-load-bearing robustness evidence is Tiers 5-6, which deliberately defeat the
-redundancy:
-
-  Tier 1  leave-one-component-out  (6 substantive families)       [context]
-  Tier 2  drop-top-loaders         (5/10 highest |loading|)       [context]
-  Tier 3  random-subset bootstrap  (drop random 20%, 200 reps)    [context]
-  Tier 4  leave-one-indicator-out  (drop each of N, min phi)      [context]
-  Tier 5  sequential family ablation (drop whole families in
-          descending mass until phi<0.95; report breaking point) [adversarial]
-  Tier 6  split-half reliability   (disjoint indicator halves,
-          correlate independent factor-1 scores; no shared cols) [adversarial]
-
-Tier 2 also reports a non-Procrustes (sign-aligned) phi to confirm the
-Procrustes+argmax step is not inflating congruence (Paunonen 1997 critique).
-
-Output: robustness/factor_jackknife.csv (one row per config) + stdout verdict.
-"""
-
 import os
 import sys
 import numpy as np
@@ -48,10 +13,6 @@ from scipy import linalg as sla
 
 
 def fast_factors(X, K):
-    """Loadings + factor scores ONLY (eigendecomp + varimax). Skips the
-    O(P^2) POET sparse-covariance thresholding, which the jackknife never
-    uses — it only compares loadings/scores. ~100x faster than poet_estimate
-    on a 330-indicator panel."""
     N = X.shape[0]
     cov = X.T @ X / N
     eigvals, eigvecs = sla.eigh(cov)
@@ -78,7 +39,6 @@ VDEM_COMPONENTS = {
 
 
 def tucker_congruence(a, b):
-    """Tucker's phi: cosine between two loading vectors (sign-invariant via abs)."""
     a = np.asarray(a, dtype=float)
     b = np.asarray(b, dtype=float)
     denom = np.linalg.norm(a) * np.linalg.norm(b)
@@ -91,10 +51,6 @@ _PANEL_CACHE = {}
 
 
 def _cached_panel(df, indicators):
-    """Build the fully-interpolated panel ONCE over all indicators and cache it.
-    Jackknife configs then subset columns from this without re-interpolating
-    (per-column interpolation is independent, so the cached values are valid
-    for any column subset)."""
     key = "full"
     if key not in _PANEL_CACHE:
         _PANEL_CACHE[key] = build_panel(df, indicators)
@@ -102,8 +58,6 @@ def _cached_panel(df, indicators):
 
 
 def run_poet(df, indicators, want_K=False, full_indicators=None):
-    """Fast factor extraction on an indicator subset, reusing the cached
-    interpolated panel. Returns (loadings_df, factor_scores_df[, K_selected])."""
     if len(indicators) < 8:
         return (None, None, np.nan) if want_K else (None, None)
     panel = _cached_panel(df, full_indicators if full_indicators is not None else indicators)
@@ -126,8 +80,6 @@ def run_poet(df, indicators, want_K=False, full_indicators=None):
 
 
 def procrustes_align(L0_shared, Lr):
-    """Orthogonal Procrustes: rotate refit loadings Lr toward original L0_shared.
-    Returns the rotation matrix R (Lr @ R aligns to L0_shared)."""
     M = L0_shared.T @ Lr
     U, _, Vt = np.linalg.svd(M)
     R = (U @ Vt).T
@@ -136,9 +88,6 @@ def procrustes_align(L0_shared, Lr):
 
 def compare_to_base(base_loadings, base_f1, indicators_kept, df, want_K=False,
                     full_indicators=None):
-    """Refit on indicators_kept, align, return (phi, score_r, K_selected).
-    K_selected only computed when want_K=True (bai_ng_ic adds cost; skip it
-    for the 332 LOIO + 200 bootstrap refits where K isn't reported per-config)."""
     if want_K:
         loadings_r, fscores_r, K_sel = run_poet(df, indicators_kept, want_K=True,
                                                  full_indicators=full_indicators)
@@ -169,10 +118,6 @@ def compare_to_base(base_loadings, base_f1, indicators_kept, df, want_K=False,
 
 
 def direct_congruence(base_loadings, indicators_kept, df, full_indicators):
-    """Sign-aligned Tucker phi on factor-1 ONLY, no Procrustes/argmax. Refit
-    factor-1 is matched to base factor-1 by the column most correlated with it,
-    then phi is the raw cosine on shared indicators. Used to show the Procrustes
-    pipeline is not inflating congruence (Paunonen 1997)."""
     loadings_r, _ = run_poet(df, indicators_kept, full_indicators=full_indicators)
     if loadings_r is None:
         return np.nan
@@ -184,8 +129,6 @@ def direct_congruence(base_loadings, indicators_kept, df, full_indicators):
 
 
 def _best_match_scores(df, indicators_subset, base_f1, full_indicators):
-    """Refit on an indicator subset; return its factor-score series for the
-    factor most correlated with base factor-1, merged onto base_f1."""
     _, fscores = run_poet(df, indicators_subset, full_indicators=full_indicators)
     if fscores is None:
         return None
@@ -205,12 +148,6 @@ def _best_match_scores(df, indicators_subset, base_f1, full_indicators):
 
 
 def split_half_reliability(df, indicators, base_f1, n_reps, rng):
-    """Partition indicators into two DISJOINT random halves, fit factor-1 on
-    each independently, and correlate the two score series. Because the halves
-    share no indicators, a high correlation is genuine out-of-sample evidence
-    that the democratic construct is recoverable from either half — immune to
-    the redundancy that makes drop-a-few-indicators trivially stable.
-    Returns array of |corr(half_A_f1, half_B_f1)| across reps."""
     rs = []
     inds = list(indicators)
     for _ in range(n_reps):

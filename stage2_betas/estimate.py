@@ -15,38 +15,6 @@ WINSOR_MODE = os.environ.get("AIM4D_WINSOR_MODE", "symmetric")
 
 
 def winsorize_betas(beta_df, beta_cols, q=WINSOR_Q):
-    """Cap extreme filtered loadings symmetrically before they propagate.
-
-    The time-varying-parameter filter produces heavy tails at both ends. The
-    1989-1992 Eastern-Bloc transitions dominate the right tail (Albania +20,
-    Bulgaria +17, Romania +15, Hungary +14) and a comparable cluster sits in
-    the left tail. Left raw, either inflates the column mean and standard
-    deviation used to standardize every other country's node feature in
-    Stage 4, and pushes the beta panel off-scale.
-
-    Earlier versions clipped only the upper tail, justified on the grounds
-    that large positive loadings arise when the filter divides an idiosyncratic
-    country move by a small contemporaneous change in the global factor, while
-    large negative loadings reflect genuine counter-movement. That
-    justification does not survive measurement. The mean absolute leave-one-out
-    global change is 0.107 across 1989-1992, some 4.7 times the panel mean,
-    and 0.014 across 2009-2011, about 0.6 times it. The small-denominator
-    mechanism therefore describes the tail that clipping RETAINED, not the one
-    it removed, and an asymmetric rule defended by a reversed mechanism is an
-    outcome-directed researcher degree of freedom.
-
-    We therefore clip both tails at matched percentiles. Doing so leaves
-    downstream results unchanged: leave-one-episode-out detection holds at
-    32/46 at the watch tier, and the 2019 hold-out moves from 0.9345 to 0.9361
-    in AUC. What it removes is the beta trajectory reading of a single case,
-    since Hungary's 2008-2011 excursion is clipped to the lower bound. No
-    result in the paper rests on that reading.
-
-    Bounds are fit on the pre-cutoff training rows only (year <=
-    MAX_TRAIN_YEAR) and applied to all rows, matching the leakage discipline
-    used elsewhere in the pipeline (Tukey 1977; Leys et al. 2013). Set
-    AIM4D_WINSOR_MODE to "upper" or "none" to reproduce the alternatives.
-    """
     train = beta_df["year"] <= MAX_TRAIN_YEAR
     bounds = {}
     if WINSOR_MODE == "none":
@@ -209,15 +177,6 @@ def dcc_garch_beta(y, x):
 
 
 def estimate_country_factor_beta(y, x, n_train=None):
-    """
-    Estimate time-varying beta with a temporal hold-out.
-
-    Kalman hyperparameters (q_var, r_var) are fit on y[:n_train], x[:n_train]
-    only. The Kalman smoother runs on that pre-cutoff subset; post-cutoff
-    betas are propagated forward by the random-walk model (held at the last
-    pre-cutoff smoothed value). DCC-GARCH parameters are model-free (no MLE),
-    so its beta series can use the full panel without leakage.
-    """
     if n_train is None or n_train >= len(y):
         n_train = len(y)
 

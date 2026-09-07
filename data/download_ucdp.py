@@ -1,16 +1,3 @@
-"""
-Download UCDP-GED (Uppsala Conflict Data Program — Georeferenced Event Dataset).
-
-Used by robustness/ucdp_overlap_test.py to gate the transfer-learning plan.
-GED records all violent events; we aggregate to country-year and flag state-based
-conflict (type_of_violence == 1) crossing the 25-battle-deaths threshold per
-Hegre et al. (2019) / ViEWS convention.
-
-UCDP-GED is published under CC-BY 4.0. https://ucdp.uu.se/downloads/
-
-Tries v25.1 then v24.1 then v23.1. Saves to data/ucdp_ged.csv (event-level).
-"""
-
 import io
 import os
 import sys

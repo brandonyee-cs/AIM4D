@@ -1,18 +1,3 @@
-"""Paired contrast between the mobilization and digital-control blocks under the strict design.
-
-onset_forecast_clean.py and onset_forecast_ert.py report each block's marginal contribution
-(full minus ablated) with a paired country-clustered bootstrap. Those intervals bound one
-block at a time. The contrast between the two blocks is a different quantity: the difference
-between the two contributions, which on the same scored rows equals AUC(ablate_dsp) minus
-AUC(ablate_mob), because the full-model term cancels. This script re-runs the identical
-rolling scorers for full, ablate_mob and ablate_dsp and bootstraps that difference directly,
-pooling over the same three learners and three seeds, then reports the minimum detectable
-contrast at eighty percent power (2.80 * SE with SE = width / 3.92).
-
-AIM4D_OUTCOME=ledger uses the hand ledger (onset_forecast_clean); AIM4D_OUTCOME=ert uses
-ERT v16 (onset_forecast_ert). Outputs robustness/channel_contrast_<outcome>.csv.
-"""
-
 import os
 import sys
 

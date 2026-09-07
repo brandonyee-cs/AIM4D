@@ -1,21 +1,3 @@
-"""Temporal precedence of the mobilization signal (answer to 'prediction is not
-mechanism'). We make a predictive, not causal, claim, but a leading indicator
-must at least PRECEDE the event rather than coincide with or follow it. The
-reverse-causality worry is that mobilization is a RESPONSE to visible erosion, not
-an antecedent. Three checks, all out of the model:
-
-  (A) Event study: mean standardized mobilization vs digital-control signal in the
-      five years BEFORE autocratization onset (event time tau = -5..0).
-  (B) Pre-onset elevation: is each channel already elevated at tau in [-3,-1]
-      relative to non-onset baseline country-years?
-  (C) Lead comparison: in how many episodes does mobilization cross an alert level
-      EARLIER than digital control, and what is the median lead?
-  (D) Lead-lag direction: within-country cross-correlation between mobilization and
-      the year-over-year change in the democratic factor. If mobilization leads
-      decline, mob_t predicts factor decline at t+k more strongly than past decline
-      predicts mobilization at t+k.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):

@@ -1,13 +1,3 @@
-"""Rashomon variable-importance for the headline finding (mobilization > digital
-information control). Permutation importance from a single model can be a one-model
-artifact; the Fisher-Rudin-Dominici model-class-reliance / Rashomon-set idea is to
-check whether the ranking holds across ALL near-optimal models. We fit a spread of
-candidate models, keep those within epsilon of the best out-of-sample AUC (the
-Rashomon set), and report channel-level permutation importance across that set. The
-claim survives iff the mobilization channel outranks the digital-society (DSP)
-channel in essentially every near-optimal model.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",

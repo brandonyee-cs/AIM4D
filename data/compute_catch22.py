@@ -1,18 +1,3 @@
-"""
-G7: catch22 recurrent time-series features per country.
-
-catch22 (Lubba et al. 2019) is a 22-feature subset of the hctsa library
-that captures rolling-window slope, peak count, time-reversal asymmetry,
-and other temporal-structure indicators. It is the field-standard
-fast-and-interpretable summary of a time series.
-
-For each country we compute catch22 over a rolling 8-year window of the
-v2x_polyarchy and v2x_libdem time series and export the features per
-country-year.
-
-Output: data/catch22_features.csv with one column per (variable, statistic).
-"""
-
 import os
 import numpy as np
 import pandas as pd
@@ -28,7 +13,6 @@ WINDOW = 10
 
 
 def rolling_catch22(series, window=WINDOW):
-    """Return list of 22-feature dicts (one per t with at least window obs)."""
     n = len(series)
     out = []
     for t in range(n):

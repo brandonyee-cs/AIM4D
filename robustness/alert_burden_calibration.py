@@ -1,17 +1,3 @@
-"""
-False-alert rates, watchlist burden, and calibration diagnostics.
-
-Two referee points motivate this. First, "zero stable-democracy false
-positives" is reported without a denominator or a time window, which makes it
-unfalsifiable; what an operator needs is the annual alert rate over the whole
-eligible risk set and the resulting watchlist size. Second, the reliability
-diagram's top bin holds six country-years, so the curve carries no usable
-uncertainty; calibration slope and intercept with bootstrap intervals, and
-equal-frequency bins, are the standard summaries.
-
-Outputs robustness/alert_burden.csv and robustness/calibration_diagnostics.csv.
-"""
-
 import os
 import sys
 

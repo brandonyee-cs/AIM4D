@@ -10,8 +10,6 @@ __pycache__/
 run_all_local.log
 run_phase2_local.log
 k_sens_rerun.log
-quality_reports/__pycache__/
-quality_reports/**/*.bak
 sanity_rerun.log
 enet_rerun.log
 rashomon_rerun.log
@@ -21,8 +19,5 @@ robustness/_seqshape_*
 robustness/audit_mtl_election_leak.py
 robustness/*.log
 
-# Per-origin truncated panels built by strict_endtoend_refit.py. These are
-# ~450MB copies of data/ and are deleted when each origin finishes; a glob add
-# during a run would otherwise commit one.
 data/_trunc_*/
 .refit_worktrees/

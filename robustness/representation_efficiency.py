@@ -1,19 +1,3 @@
-"""Does the factor representation earn its keep? The VALID test: data efficiency.
-
-Any test that predicts a V-Dem-derived target favors the raw 332 indicators by
-construction (the factor bottleneck is lossy). The structure's genuine advantage
-is regularization in the small-sample regime (Stock-Watson 2002; Bernanke-Boivin-
-Eliasz 2005 FAVAR): a low-dimensional representation has lower variance, so it
-should degrade less than the raw indicators as training positives become scarce,
-even though raw wins asymptotically.
-
-Design: same learner (HistGBM), 4 factors vs 332 raw indicators, strict 2019
-hold-out fixed, training episodes subsampled to k in a pre-specified grid with R
-random draws each. Factors are extracted on <=2019 only (no hold-out peeking),
-then projected onto all rows. Report OOS AUC-PR vs k for both representations;
-a crossover (factors > raw at small k) is the clean, non-confounded win.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",

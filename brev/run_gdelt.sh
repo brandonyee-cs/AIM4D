@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
-# Run the GDELT downloader on the Brev instance.
-# Output streams to brev/gdelt.log; final CSV lands at data/gdelt_country_year.csv.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
 if [[ -d .venv ]]; then
-  # shellcheck disable=SC1091
   source .venv/bin/activate
 fi
 

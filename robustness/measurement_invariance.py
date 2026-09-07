@@ -1,19 +1,3 @@
-"""
-A1: Measurement-invariance check — rebuild the Stage-1 democratic factor on
-Freedom House + Polity indicators (instead of V-Dem) and show factor-1
-correlates with the V-Dem factor-1.
-
-Per the research: at ~31 indicators use PCA + parallel analysis, NOT POET
-(POET's thresholding consistency is large-P asymptotics). The clean test
-window is 2013-2018 (FH 25-subquestions start 2013; Polity5 ends 2018).
-
-Go/no-go: Pearson >= 0.80 on the overlapping country-years. Expected 0.85-0.90
-per the convergent-validity literature (Coppedge et al. 2018: V-Dem vs FH ~0.90,
-vs Polity2 ~0.85; Boese 2019).
-
-Output: robustness/measurement_invariance.csv + stdout verdict.
-"""
-
 import os
 import sys
 import numpy as np
@@ -36,8 +20,6 @@ OVERLAP_START, OVERLAP_END = 2013, 2018
 
 
 def _parallel_analysis(X, n_iter=100, percentile=95, rng=None):
-    """Horn's parallel analysis: keep factors whose eigenvalue exceeds the
-    95th-percentile eigenvalue from random data of the same shape."""
     rng = rng or np.random.default_rng(0)
     n, p = X.shape
     real_eigs = np.sort(np.linalg.eigvalsh(np.corrcoef(X, rowvar=False)))[::-1]
@@ -51,7 +33,6 @@ def _parallel_analysis(X, n_iter=100, percentile=95, rng=None):
 
 
 def _fh_country_to_iso3(name):
-    """Best-effort FH country name -> V-Dem country_text_id via country_converter."""
     try:
         import country_converter as coco
         iso = coco.convert(names=name, to="ISO3", not_found=None)

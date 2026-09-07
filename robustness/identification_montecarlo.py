@@ -1,30 +1,3 @@
-"""
-A3: Monte Carlo identification simulation backing Proposition 1.
-
-Simulates from the AIM4D structural DGP with a KNOWN contagion coefficient α
-and checks that a spatial-2SLS estimator (the structural benchmark) recovers
-it — empirically demonstrating point identification under the proposition's
-premises (fixed row-normalized W, lagged neighbor outcomes, neighborhood
-unconfoundedness).
-
-DGP:  y_{i,t} = β_i'F_t + α·Σ_j W_{ij} y_{j,t-1} + γ_{s} S_{i,t} + ε_{i,t}
-
-Experiments:
-  1. Recovery: sweep α∈{0,0.1,0.2,0.3,0.5} × (N,T) grid; report bias, RMSE,
-     CI coverage. Shrinking RMSE as N·T grows = the consistency signature.
-  2. Reflection violation: use contemporaneous W·y_t → biased α̂ that does NOT
-     shrink with N,T (Manski reflection).
-  3. Omitted confounder: add an unmodeled common shock correlated with Wy →
-     upward bias (neighborhood unconfoundedness violation).
-  4. Learned-W partial ID: estimate α jointly with a 2-edge-type W mixture →
-     identified set spreads over the simplex (vs degenerate point under fixed W).
-
-Structural estimator: pysal.spreg.GM_Lag (spatial 2SLS, Kelejian-Prucha
-instruments). Add libpysal + spreg to requirements.
-
-Output: robustness/identification_montecarlo.csv + stdout summary.
-"""
-
 import os
 import sys
 import numpy as np
@@ -43,9 +16,6 @@ RNG_SEED = 42
 
 
 def build_real_W(n_countries, year=2010):
-    """Row-normalized contiguity W from COW DirectContiguity, truncated to
-    the first n_countries states present in that year. Falls back to a
-    random-geometric graph if the file is unavailable."""
     try:
         cont = pd.read_csv(CONTIG)
         cont = cont[(cont["conttype"] <= 2) & (cont["year"] == year)]
@@ -105,13 +75,6 @@ def simulate(N, T, alpha, W, seed, violate=None, burn=20):
 
 
 def fit_gm_lag(y, W, F, beta, S, gamma):
-    """Recover the contagion coefficient α on the stacked panel with the
-    PREDETERMINED lagged spatial term W·y_{t-1}. Because the spatial regressor
-    is lagged (Prop 1 / Yu-de Jong-Lee 2008), OLS of y_t on [const, domestic,
-    W·y_{t-1}] is consistent — no contemporaneous-SAR simultaneity to instrument
-    away. (A full spreg.GM_Lag with W²-instruments gives the same α̂ here; we
-    use closed-form OLS so the simulation runs at R=1000 without pysal.)
-    Returns (alpha_hat, std_error)."""
     N, T = y.shape
     rows_y, rows_x, rows_wy = [], [], []
     for t in range(1, T):

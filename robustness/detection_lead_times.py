@@ -1,15 +1,3 @@
-"""
-Pre-onset detection lead-time distribution.
-
-For each detected autocratization episode, computes the earliest year in
-the pre-onset window where the framework's combined_risk first crossed the
-watch (P80), warning (P95), and alert (P98) thresholds. Reports the
-distribution of lead times so reviewers can see whether detections are
-consistently early or just barely-on-time.
-
-Outputs robustness/detection_lead_times.csv and prints a summary.
-"""
-
 import os
 import sys
 import warnings

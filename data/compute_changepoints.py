@@ -1,17 +1,3 @@
-"""
-G9: Change-point features via PELT (Pruned Exact Linear Time) — PROSPECTIVE.
-
-For each country-year (c, T), we run PELT on the TRAILING 30-year window
-[T-29, T] only. That makes every feature value at year T derived strictly
-from data available by year T — no future leakage. (The previous version ran
-PELT once globally over 1789-2025, so years_since_break at year T could
-reflect breakpoint positions PELT chose using post-T data.)
-
-Output: data/changepoints.csv with columns
-  country_text_id, year, years_since_break_poly, years_since_break_libdem,
-  break_in_last_3yr_poly, break_in_last_3yr_libdem
-"""
-
 import os
 import numpy as np
 import pandas as pd
@@ -27,7 +13,6 @@ WINDOW = 30
 
 
 def detect_breaks_in_window(series, penalty=0.05, model="l2", min_size=4):
-    """Return sorted list of break-year indices (within-window) for a 1-D series."""
     x = np.asarray(series, dtype=float)
     if len(x) < min_size * 2:
         return []
@@ -41,10 +26,6 @@ def detect_breaks_in_window(series, penalty=0.05, model="l2", min_size=4):
 
 def years_since_last_break_prospective(series, years, window=WINDOW,
                                         penalty=0.05, min_size=4):
-    """
-    For each index t, run PELT on series[max(0, t-window+1) : t+1].
-    Return (years_since_last_break, break_in_last_3_years) arrays of length n.
-    """
     n = len(series)
     yss = np.full(n, 99, dtype=int)
     win3 = np.zeros(n, dtype=int)

@@ -1,20 +1,3 @@
-"""Correct diffusion test for the cultural channel: near-vs-far pool decomposition.
-
-The Galton horse race (contagion_galton.py) pits a cultural spatial lag against a
-GLOBAL precedent term, but the global term is the mean change over ALL other
-countries, which CONTAINS the culturally-near ones. The two regressors overlap and
-the broader global term wins by collinearity, so that test cannot isolate whether
-diffusion is stronger along cultural lines.
-
-The standard fix decomposes the world into DISJOINT pools: the culturally-near set
-(cultural-bloc ties) and the culturally-far set (everyone else). A common global
-shock hits both pools equally and nets out in the contrast. The cultural channel is
-real, as a RELATIVE claim, iff near transmits significantly more than far
-(beta_near > beta_far). We test contemporaneous comovement and a one-year-lagged
-diffusion spec (neighbours at t-1 predict own change at t), post-2005, clustered by
-country, with a Wald test of beta_near = beta_far.
-"""
-
 import os
 import sys
 import warnings

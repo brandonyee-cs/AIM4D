@@ -1,35 +1,3 @@
-"""
-Spatial error, Durbin-error and combined models, estimated completely.
-
-This replaces the withdrawn spatial_sdem_sac.py. Four things it does that the
-withdrawn version did not.
-
-The error parameter comes from the published Kelejian-Prucha three-moment
-system (spatial_gm.py), which recovers a known parameter in Monte Carlo; the
-withdrawn version used a hand-written pair of moments that were not zero-mean at
-the truth and missed 0.6 by 0.046 on a synthetic design.
-
-The estimation sequence is completed. For the error models the data are filtered
-by the estimated parameter and the regression refit, which is what makes the
-procedure an estimator rather than a diagnostic; for the combined model this is
-generalised spatial two-stage least squares, filtering the instruments as well.
-
-Uncertainty is reported for every parameter, including the error parameter, by a
-country-block bootstrap that resamples whole countries and repeats the entire
-sequence.
-
-Weights are stated. Within each year W is restricted to the countries observed
-that year and row-normalised over them, so a country's lag is the mean of its
-observed neighbours rather than a sum with absent neighbours set to zero.
-Countries with no observed neighbour in a year contribute a zero row and are
-counted. tr(W'W) is accumulated over the year blocks actually used.
-
-Covariates entering X and the instruments are lagged one year, so the exogeneity
-claim rests on timing rather than on the names of the variables.
-
-Outputs robustness/spatial_models.csv.
-"""
-
 import os
 import sys
 import warnings
@@ -51,7 +19,6 @@ N_BOOT = int(os.environ.get("AIM4D_SPATIAL_BOOT", "300"))
 
 
 class YearBlockW:
-    """Row-normalised contiguity within each year, over observed countries only."""
 
     def __init__(self, cid, yr, W, order):
         pos = {c: i for i, c in enumerate(order)}
@@ -103,7 +70,6 @@ def tsls(y, endog, exog, inst, groups):
 
 
 def first_stage_F(endog, exog, inst, groups):
-    """Cluster-robust Wald on the excluded instruments (Kleibergen-Paap for k=1)."""
     Z = np.column_stack([inst, exog])
     b, r = ols(endog, Z)
     _, V = cluster_se(Z, r, groups)
@@ -115,7 +81,6 @@ def first_stage_F(endog, exog, inst, groups):
 
 
 def fit_all(y, Xe, WX, Wop, groups, want_boot=False):
-    """SEM, SDEM, SAR and SAC on one sample. Returns a dict of parameters."""
     out = {}
     trW = Wop.trWtW
 
@@ -124,7 +89,6 @@ def fit_all(y, Xe, WX, Wop, groups, want_boot=False):
                            else np.column_stack([Wop(m[:, k]) for k in range(m.shape[1])]))
                 for m in mats]
 
-    # SEM: OLS -> lambda -> filter -> refit
     _, u = ols(y, Xe)
     lam = gm_lambda(u, Wop, trW, Wop.n)
     ys, Xs = filtered(lam, [y, Xe])
@@ -132,7 +96,6 @@ def fit_all(y, Xe, WX, Wop, groups, want_boot=False):
     se, _ = cluster_se(Xs, r, groups)
     out["SEM"] = {"lambda": lam, "beta_ylag": b[1], "se_ylag": se[1]}
 
-    # SDEM: same with neighbours' covariates included
     Xd = np.column_stack([Xe, WX])
     _, ud = ols(y, Xd)
     lam_d = gm_lambda(ud, Wop, trW, Wop.n)
@@ -144,20 +107,9 @@ def fit_all(y, Xe, WX, Wop, groups, want_boot=False):
                    "se_theta": sed[k0:k0 + WX.shape[1]].copy(),
                    "beta": bd[:k0].copy(), "V": Vd, "k0": k0}
 
-    # SAR by 2SLS, then SAC by generalised spatial 2SLS.
-    # Two instrument sets. The Kelejian-Prucha set is the spatial lags of the
-    # exogenous covariates. Lee's best-2SLS instrument is the reduced-form
-    # prediction W(I - rho W)^-1 X beta, built from a preliminary estimate; it is
-    # the strongest instrument available for this model, so the first-stage F it
-    # attains is the ceiling any instrument choice can reach here.
     Wy = Wop(y)
     inst = np.column_stack([np.column_stack([Wop(WX[:, k]) for k in range(WX.shape[1])]),
                             np.column_stack([Wop(Wop(WX[:, k])) for k in range(WX.shape[1])])])
-    # The best instrument depends on a preliminary rho, and a single step from the
-    # weak-instrument preliminary inherits its error. We iterate the construction to
-    # a fixed point instead. On this panel the iteration converges to the same value,
-    # 0.3326, from starting values of -0.8 through +0.8, so the estimate does not
-    # depend on where it begins.
     bs0, _, _, _ = tsls(y, Wy[:, None], Xe, inst, groups)
     rho0 = float(np.clip(bs0[0], -0.9, 0.9))
 
@@ -165,7 +117,7 @@ def fit_all(y, Xe, WX, Wop, groups, want_boot=False):
         b0, _ = ols(y - r0 * Wy, Xe)
         xb = Xe @ b0
         acc, term = xb.copy(), xb.copy()
-        for _ in range(30):          # Neumann expansion of (I - r0 W)^-1 X beta
+        for _ in range(30):
             term = r0 * Wop(term)
             acc = acc + term
             if np.max(np.abs(term)) < 1e-12:
@@ -185,9 +137,6 @@ def fit_all(y, Xe, WX, Wop, groups, want_boot=False):
     xb = Xe @ b0
     out["best_iv"] = {"F_kp": first_stage_F(Wy, Xe, inst, groups),
                       "F_lee": first_stage_F(Wy, Xe, lee, groups),
-                      # Fit of y on X after removing rho0*Wy. This is NOT the spatial reduced-form
-            # mean, which carries the multiplier (I - rho W)^-1; it is reported as a
-            # descriptive statistic only.
             "rf_R2": 1.0 - np.var(y - rho0 * Wy - xb) / np.var(y)}
     bs, ses, us, _ = tsls(y, Wy[:, None], Xe, inst, groups)
     out["SAR"] = {"rho": float(bs[0]), "se_rho": float(ses[0]),
@@ -208,7 +157,7 @@ def main():
     W, _ = build_W_contiguity(countries)
     mac = pd.read_csv(MACRO).rename(columns={"iso3": "country_text_id"})
     mac = mac.sort_values(["country_text_id", "year"])
-    for c in EXOG:                       # lag one year: predetermined by timing
+    for c in EXOG:
         mac[c] = mac.groupby("country_text_id")[c].shift(1)
 
     rows = []
@@ -239,17 +188,6 @@ def main():
 
     base = fit_all(y, Xe, WX, Wop, cid)
 
-    # Residual bootstrap, holding the network fixed.
-    #
-    # Two rules learned the hard way. Resampling countries destroys the dependence
-    # the parameters measure: on simulated panels it covered the truth in 0 per cent
-    # of replications at an error parameter of 0.6. And the generating process must
-    # match the estimator whose interval is read off it: regenerating from the
-    # combined fit and reading the error-model estimate put both the error parameter
-    # and the Lee-instrument estimate outside their own intervals. So each family is
-    # bootstrapped from its own fitted process, which is the case
-    # spatial_bootstrap_coverage.py validates (94 to 100 per cent for the error
-    # parameter, 90 to 98 per cent for the autoregressive one).
     rng = np.random.default_rng(20260905)
 
     def neumann(vec, coef, iters=40):
@@ -265,9 +203,6 @@ def main():
                              "SAC.rho", "SAC.lambda"]}
     theta_boot = []
 
-    # (a) error-model family. SEM regenerates from the SEM fit; SDEM regenerates
-    # from its OWN fit, beta, theta and lambda together, so the theta interval is
-    # centred on the estimated theta and not on zero (referee2 round 1, 1b.3).
     lam_e = float(np.clip(base["SEM"]["lambda"], -0.9, 0.9))
     beta_e, u_e = ols(y, Xe)
     eps_e = u_e - lam_e * Wop(u_e)
@@ -301,12 +236,6 @@ def main():
         boots["SDEM.lambda"].append(r["SDEM"]["lambda"])
         theta_boot.append(r["SDEM"]["theta"])
 
-    # (b) autoregressive family. Each instrument set gets a generating process at
-    # its OWN point estimate. Generating from one estimator's fit and reading the
-    # other's interval off it centres that interval on the wrong value, which is
-    # what put the Lee estimate of 0.373 outside an interval built from the
-    # Kelejian-Prucha fit of -0.033. Two estimators that disagree should be shown
-    # disagreeing, not reconciled by a mis-centred interval.
     Wy_obs = Wop(y)
 
     def ar_bootstrap(rho_point, collect):
@@ -359,11 +288,6 @@ def main():
                     "est": round(float(base["best_iv"][key]), 4),
                     "ci_low": np.nan, "ci_high": np.nan, "note": note})
 
-    # The common-factor restriction is not reported. Testing theta + rho*beta = 0
-    # requires theta, rho and beta from one encompassing specification with their
-    # joint uncertainty; taking theta from the Durbin-error bootstrap, rho from the
-    # combined-model bootstrap and beta fixed at its full-sample value is not that
-    # test, and the version this script previously printed has been removed.
 
     out = pd.DataFrame(res)
     print(out.to_string(index=False))

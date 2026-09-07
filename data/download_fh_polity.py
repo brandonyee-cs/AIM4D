@@ -1,19 +1,3 @@
-"""
-Download Freedom House (Freedom in the World) + Polity5 for the measurement-
-invariance check (robustness/measurement_invariance.py).
-
-FH "All Data" has 25 sub-question scores (A1..G4) but only from 2013 onward.
-Polity5 has 6 component variables (xrcomp, xropen, xconst, parreg, parcomp)
-1800-2018.
-
-FH is CC-BY; Polity5 is public (Center for Systemic Peace).
-
-Outputs:
-  data/fh_subscores.csv   (country, year, A1..G4)
-  data/polity5.csv        (ccode, country, year, xrcomp, xropen, xconst,
-                           parreg, parcomp, polity2)
-"""
-
 import io
 import os
 import sys

@@ -1,14 +1,3 @@
-"""Pressure-test the external benchmarks before drawing conclusions.
-
-Three diagnostics the headline CV number cannot settle on its own:
-  1. per-fold stability across the expanding windows (is 0.83 one lucky fold?),
-  2. the strict train-<=2019 -> predict-future hold-out, the protocol AIM4D's
-     0.931 lives on and the generalization claim rests on,
-  3. AUC-PR alongside AUC-ROC, since ROC flatters at an 8% base rate.
-
-Reuses the exact loaders, models, and labels from external_benchmarks.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",

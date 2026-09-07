@@ -1,12 +1,4 @@
 #!/usr/bin/env bash
-# Full AIM4D pipeline + robustness suite, macOS-friendly.
-# Canonical stages run sequentially; Task E folds and Task F episodes run
-# concurrently in isolated git worktrees (AIM4D_PAR overrides worker count,
-# AIM4D_THREADS caps per-process threads).
-#
-# Usage:
-#   bash run_all_local.sh
-#   AIM4D_PAR=3 AIM4D_THREADS=3 bash run_all_local.sh
 set -euo pipefail
 cd "$(dirname "$0")"
 

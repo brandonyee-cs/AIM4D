@@ -1,23 +1,3 @@
-"""
-F3: Archigos leader-level features.
-
-Archigos v4.1 (Goemans, Gleditsch & Chiozza 2009) records every head of
-state since 1875, including entry/exit dates, age, military background, and
-manner of entry/exit. Leader-level covariates are the load-bearing piece of
-CoupCast (Beger, Dorff & Ward 2014) and likely cover the 2021-23 coup
-cluster (Niger / Gabon / Burkina Faso) that our 2017-cutoff pipeline misses.
-
-Features per country-year:
-  - leader_tenure_years
-  - irregular_entry  (dummy: 1 if entered via coup/rebellion/etc.)
-  - military_background  (dummy: 1 if leader has military rank)
-  - leader_age (at year)
-  - years_since_irregular_change
-
-Source URL: https://www.prio.org/data/3 (Archigos v4.1)
-We fall back to the public dataverse mirror if direct download fails.
-"""
-
 import os
 import sys
 import io
@@ -75,7 +55,6 @@ def download_archigos():
 
 
 def _read_archigos(path):
-    """Read Archigos file (.txt / .dta / .csv) and normalize column names."""
     if path.endswith(".dta"):
         df = pd.read_stata(path)
     elif path.endswith(".zip"):

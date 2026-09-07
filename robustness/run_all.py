@@ -1,23 +1,3 @@
-"""
-Master script: runs all robustness checks and produces a consolidated summary.
-
-Usage:
-  python robustness/run_all.py              # Run all checks
-  python robustness/run_all.py --fast       # Skip slow checks (K sensitivity, network variants)
-  python robustness/run_all.py --only X     # Run only check X
-
-Individual checks can also be run standalone:
-  python robustness/threshold_sweep.py
-  python robustness/false_positive_analysis.py
-  python robustness/baseline_comparison.py
-  python robustness/k_sensitivity.py        # ~60 min (re-runs full pipeline 3x)
-  python robustness/hmm_states.py           # ~40 min (re-runs HMM 4x)
-  python robustness/network_variants.py     # ~20 min (re-trains GNN 4x)
-
-Estimated total runtime: ~2-3 hours on a modern machine.
-Fast mode (--fast): ~15 min (threshold + FP + baseline only).
-"""
-
 import sys
 import os
 import time
@@ -74,7 +54,6 @@ CHECKS = {
 
 
 def run_check(name, config):
-    """Import and run a single robustness check."""
     print(f"\n{'#' * 70}")
     print(f"# RUNNING: {name} — {config['description']}")
     print(f"# Estimated time: {config['est_time']}")

@@ -1,15 +1,3 @@
-"""Baseline ladder scored on the same hold-out rows as the framework.
-
-The conventional-design baseline table compared models that had each been
-scored on their own available rows, so the numbers were not commensurable and
-could not be reproduced from any stored output. Here every model is trained on
-country-years through 2019 and scored on exactly the rows the framework is
-scored on: the post-2019, non-post-onset country-years carrying both a label
-and a combined_risk. Models whose inputs are missing for some of those rows are
-reported with the intersection size so the shortfall is visible rather than
-absorbed into the metric.
-"""
-
 import os
 import sys
 import warnings
@@ -71,7 +59,6 @@ RNG = np.random.default_rng(20260905)
 
 
 def boot_ci(y, s, countries):
-    """Country-clustered percentile bootstrap CI for AUC and average precision."""
     uniq = np.unique(countries)
     idx = {c: np.where(countries == c)[0] for c in uniq}
     a, b = [], []

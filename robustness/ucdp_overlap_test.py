@@ -1,25 +1,3 @@
-"""
-Gating test: should we pursue UCDP-GED → V-Dem ERT transfer learning?
-
-For each of our 46 V-Dem ERT autocratization onsets, check whether the country
-had state-based conflict (UCDP-GED, type_of_violence==1, >=25 battle-deaths)
-in the 10 years before onset.
-
-Beger-Morgan-Ward (2021, JCR response) and the negative-transfer literature
-(Wang et al. 2019, Tan et al. 2018) predict that if <40% of episodes have a
-prior conflict signal, transfer learning will fail because the encoder learns
-the wrong DGP (conflict ≠ stealth autocratization).
-
-DECISION RULE:
-  >= 40% overlap  → transfer learning may help, run CCA diagnostic next
-   < 40% overlap  → skip transfer plan, add UCDP as Stage-5 meta-feature
-                    instead (~2 hr, +0.01-0.03 AUC, zero architectural risk)
-
-Outputs:
-  robustness/ucdp_overlap_test.csv — per-episode flag
-  Stdout — go/no-go verdict + stratified stats + missing-match diagnostics
-"""
-
 import os
 import sys
 import pandas as pd
@@ -58,7 +36,6 @@ def country_candidates(name):
 
 
 def load_ucdp_country_year():
-    """Aggregate UCDP-GED to country-year state-based conflict flags."""
     if not os.path.exists(UCDP_CSV):
         sys.exit(
             f"Missing {UCDP_CSV}. Run:\n  python3 data/download_ucdp.py"

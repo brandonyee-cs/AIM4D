@@ -1,16 +1,3 @@
-"""
-What an annual watchlist built from the strict-design forecasts would look like.
-
-Precision at 25 in the strict table pools country-years across the whole
-evaluation period, so it is not the precision of a list an analyst would receive
-each year, and several of its rows can belong to one onset. This reports the
-quantities a user of such a list would care about: precision within each year's
-list, how many distinct onsets are caught at least once, how far ahead they are
-caught, and how many alerts are issued per onset detected.
-
-Outputs robustness/watchlist_metrics.csv.
-"""
-
 import os
 import re
 import sys
@@ -70,8 +57,6 @@ def blend(parts):
 
 
 def report(b, tag, rows):
-    # An episode is a (country, onset year) pair. Counting onset years alone
-    # merges distinct countries that happen to decline in the same year.
     pos = b[b.y == 1]
     tot_onsets = len(set(zip(pos.country_name, pos.onset_year)))
     for k in DEPTHS:

@@ -1,17 +1,3 @@
-"""Stage-1 factor robustness beyond the parallel-analysis null in sanity_checks.
-
-  loading_stability : bootstrap percentile CIs on per-factor Tucker congruence
-                      between resampled and full-sample loadings. (A bias-corrected
-                      and accelerated interval is ill-posed here because the
-                      reference statistic is self-congruence, which is identically
-                      one and sends the BCa bias term to infinity; the percentile
-                      bootstrap is the standard factor-stability interval.)
-  split_half        : per-factor congruence between factor models fit on the early
-                      and late halves of the panel.
-  convergent        : Spearman correlation of each factor score with Polity2, a
-                      democracy measure external to V-Dem.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",

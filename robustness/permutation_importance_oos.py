@@ -1,27 +1,3 @@
-"""
-OOS permutation feature importance for the AIM4D meta-learner.
-
-Replaces in-sample SHAP / GB-feature-importance with shuffle-based importance
-computed on the held-out (year > TRAIN_CUTOFF, post-onset excluded) slice.
-
-For each feature:
-  1. Compute baseline OOS AUC-ROC and AUC-PR
-  2. Shuffle the feature's OOS values
-  3. Recompute OOS AUC / AUC-PR
-  4. Delta = baseline - shuffled (positive means feature matters)
-  5. Repeat N_PERMS times for stability, average
-
-Why OOS not in-sample? In-sample importances can reward features that overfit;
-OOS permutation tells you what genuinely transports.
-
-Why permutation not SHAP? SHAP measures attribution within a model; permutation
-measures information loss in the predictive signal. The latter is what reviewers
-actually care about for forecasting claims.
-
-Output: robustness/permutation_importance_oos.csv with columns
-  feature, mean_delta_auc, std_delta_auc, mean_delta_auc_pr, std_delta_auc_pr, rank
-"""
-
 import os
 import sys
 import numpy as np
@@ -52,7 +28,6 @@ EXCLUDE_COLS = {
 
 
 def build_label_columns(df):
-    """Reconstruct the binary label + post-onset mask from KNOWN_EPISODES."""
     preonset = set()
     postonset = set()
     for c, info in KNOWN_EPISODES.items():

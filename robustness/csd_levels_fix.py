@@ -1,15 +1,3 @@
-"""Pre-specified fix attempt for the CSD channel: compute critical-slowing-down
-indicators on the Gaussian-DETRENDED LEVEL of each factor, not on the differenced
-domestic residual. CSD theory (Scheffer 2009, Dakos 2012) concerns rising
-variance/autocorrelation in the level as resilience is lost; first-differencing
-removes exactly that signal. Detrending (Gaussian kernel, sigma=3) isolates
-fluctuations around the slow trend without conditioning on the level itself.
-
-Single pre-specified variant (detrended levels, sigma=3), evaluated on the same
-matched detection-vs-false-positive test as csd_hardening. Pass iff the pre-onset
-significance rate clearly exceeds the stable false-positive rate.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",

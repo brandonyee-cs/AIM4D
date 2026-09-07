@@ -1,18 +1,3 @@
-"""
-DSP feature ablation.
-
-Tests whether the Digital Society Project variables (v2smgovdom, v2smfordom,
-v2smgovfilprc, v2smgovsmmon, v2smpardom and their derived terms) carry
-distinct predictive signal beyond the rest of the AIM4D feature set.
-
-Reproduces the Stage 5 stacked ensemble (LR + GB, 0.20/0.80 weights) on
-the engineered feature matrix saved in ews_signals.csv, with and without
-all DSP-derived columns. Reports AUC-ROC, AUC-PR, OOS AUC, and per-episode
-detection at the watch tier.
-
-Outputs robustness/dsp_ablation.csv.
-"""
-
 import os
 import sys
 import warnings

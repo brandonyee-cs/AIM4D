@@ -1,19 +1,3 @@
-"""
-Architectural addition: cultural / linguistic similarity edges for Stage 4.
-
-Uses a fixed mapping of countries to broad cultural-linguistic blocs
-following Inglehart-Welzel + Huntington civilizational clusters plus
-language family. Two countries share an edge if they are in the same bloc.
-
-This is a rough but theoretically-motivated complement to the contiguity,
-alliance, and trade edge types already in Stage 4. The motivation is that
-authoritarian norm diffusion is well-documented to flow along shared
-linguistic / cultural channels in addition to geographic / strategic ones
-(Ambrosio 2010, Schmotz-Selvik 2025).
-
-Output: data/cultural_pairs.csv with columns (iso3_a, iso3_b, bloc).
-"""
-
 import os
 import itertools
 import pandas as pd

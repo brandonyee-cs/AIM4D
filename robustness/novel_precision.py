@@ -1,19 +1,3 @@
-"""Precision-at-top-k restricted to genuinely-novel onsets.
-
-A watchlist that scores already-autocratizing countries highly earns easy credit:
-naming a regime whose episode began years before the forecast origin is not a
-prediction. The accountability claim rests on the harder denominator, precision
-among countries that were NOT already in an autocratization episode at the
-forecast origin (Ward, Greenhill & Bakke 2010; the ViEWS evaluation philosophy,
-Hegre et al. 2019). We therefore report precision@k both ways on the strict
-out-of-sample window (year > cutoff): the full list, and the novel-only list that
-removes already-ongoing episodes from both the ranking and the positive set.
-
-This is the retrospective analog of the pre-registered prospective scoreboard: it
-is computable now from the held-out 2020-2025 onsets, whereas the 2026-2031 list
-can only be scored after the fact.
-"""
-
 import os
 import sys
 

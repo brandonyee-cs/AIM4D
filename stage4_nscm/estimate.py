@@ -300,10 +300,6 @@ class INETARNet(nn.Module):
             nn.Linear(hidden, outcome_dim),
         )
 
-        # A comparator that never sees neighbour-derived features. The ego head
-        # above bypasses message passing but still receives the weighted spatial
-        # lags, so it cannot stand for "no network information". This one is fed
-        # the own-country block alone.
         self.domestic_encoder = nn.Sequential(
             nn.Linear(in_dim - self.spatial_lag_dim, hidden), nn.ELU(),
             nn.Linear(hidden, hidden),
@@ -317,17 +313,9 @@ class INETARNet(nn.Module):
         self.gps_logvar = nn.Sequential(nn.Linear(repr_dim, hidden), nn.ELU(), nn.Linear(hidden, treatment_dim))
 
     def get_w_weights(self):
-        """Return learned convex combination weights for the three W matrices."""
         return F.softmax(self.w_logits, dim=0)
 
     def apply_learned_w(self, x):
-        """Reweight the spatial-lag blocks using learned α weights.
-
-        Generalized to n_edge_types: each lag block contributes alpha[k] * lag_k
-        to the weighted composite, which is then replicated n_edge_types times
-        to preserve input dimensionality (the GCN downstream expects the same
-        feature width as before).
-        """
         alpha = self.get_w_weights()
         base_dim = x.shape[1] - self.spatial_lag_dim
         x_base = x[:, :base_dim]
@@ -390,13 +378,6 @@ def mmd_kernel(h1, h2, bandwidth=1.0):
 
 
 def split_val_test(mask_test, node_year):
-    """Split the post-cutoff block into a selection set and an untouched test set.
-
-    Retaining the parameter state that minimises error on the evaluation rows
-    makes those rows a selection set, so the resulting figure is not an
-    out-of-sample estimate. The earlier post-cutoff years select; the later ones
-    are scored once and never used for selection.
-    """
     yrs = torch.as_tensor(node_year)[mask_test]
     if yrs.numel() == 0:
         return mask_test, mask_test

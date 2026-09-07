@@ -1,32 +1,3 @@
-"""
-Kelejian-Prucha generalised-moments estimation for spatial error models.
-
-An earlier attempt in this repository minimised a hand-written pair of moments
-that were not zero-mean at the truth, because they omitted the trace correction
-that the second moment carries. This implements the published three-moment
-system instead, in the arrangement used by the reference implementation, and
-gates every use of it behind a Monte Carlo check on processes whose parameter is
-known.
-
-For u = lam*W*u + e with e independent and homoskedastic, write ubar = W u and
-ubarbar = W ubar. The moment conditions are
-
-    E[e'e / n]          = s2
-    E[ebar'ebar / n]    = s2 * tr(W'W) / n
-    E[ebar'e / n]       = 0
-
-which, substituting e = u - lam*ubar, are linear in (lam, lam^2, s2):
-
-    G [lam, lam^2, s2]' = g
-
-with g and G as below. The estimator minimises the squared residual of that
-system subject to the second element being the square of the first.
-
-Reference: Kelejian and Prucha, "A generalized moments estimator for the
-autoregressive parameter in a spatial model", International Economic Review 40
-(1999). Arrangement follows spreg's _momentsGM_Error.
-"""
-
 import numpy as np
 from scipy.optimize import minimize
 
@@ -42,14 +13,6 @@ def gm_moments(u, Wu, WWu, trWtW, n):
 
 
 def gm_lambda(u, wlag, trWtW, n=None, bounds=(-0.99, 0.99), strict=True):
-    """Estimate the spatial error parameter.
-
-    The objective is normalised by the scale of the moments, because an absolute
-    optimizer tolerance on an unnormalised objective terminates at the starting
-    value when the residuals are small: on one fixed residual vector, scaling it
-    by 0.01 returned exactly the starting point. The parameter must not depend on
-    the units the response is measured in.
-    """
     u = np.asarray(u, dtype=float)
     n = len(u) if n is None else n
     Wu = wlag(u)
@@ -58,7 +21,7 @@ def gm_lambda(u, wlag, trWtW, n=None, bounds=(-0.99, 0.99), strict=True):
     scale = float(u @ u) / n
     if not np.isfinite(scale) or scale <= 0:
         return np.nan
-    Gs, gs = G / scale, g / scale          # dimensionless in lam, lam^2, s2/scale
+    Gs, gs = G / scale, g / scale
 
     def obj(theta):
         lam, s2 = theta
@@ -81,7 +44,6 @@ def _dense_wlag(W):
 
 
 def monte_carlo(n=200, lam_true=0.6, reps=200, seed=0, kind="cycle"):
-    """Recover a known error parameter. This is the gate on the estimator."""
     rng = np.random.default_rng(seed)
     W = np.zeros((n, n))
     if kind == "cycle":

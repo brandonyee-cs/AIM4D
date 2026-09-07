@@ -1,12 +1,3 @@
-"""Node and edge counts of the Stage 4 spatio-temporal graph, as reported in the supplement.
-
-Rebuilds the graph with Stage 4's own construction code and no training, so the counts in
-the manuscript are re-derived rather than transcribed from a run log. Temporal edges run
-past to present only, so their count is (countries) x (year transitions).
-
-Output: robustness/graph_counts.csv.
-"""
-
 import os
 import sys
 

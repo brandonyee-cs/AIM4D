@@ -1,23 +1,3 @@
-"""
-HMM state count sensitivity analysis (S=3, 4, 5, 6).
-
-Tests whether the 5-state regime classification is robust to alternative
-state counts by comparing BIC, ICL, cross-validated log-likelihood, and
-downstream early warning performance.
-
-Methodological basis:
-  - Zucchini, MacDonald & Langrock (2016): HMM model selection via BIC
-  - Celeux & Durand (2008): cross-validated likelihood for HMMs
-  - Hamilton (1989): foundational MS model
-  - Biernacki, Celeux & Govaert (2000): ICL with entropy penalty
-
-Reports:
-  - BIC, ICL, blocked-CV log-likelihood for S=3,4,5,6
-  - Cohen's kappa (weighted) vs V-Dem for each S
-  - State interpretation table (mean polyarchy per state)
-  - Downstream EWS detection rate
-"""
-
 import sys
 import os
 import warnings
@@ -57,7 +37,6 @@ STATE_LABELS_BY_S = {
 
 
 def quantile_init_s(X_all, n_states):
-    """Quantile-based initialization for any state count."""
     f1 = X_all[:, 0]
     quantiles = np.linspace(0, 100, n_states + 1)
     thresholds = np.percentile(f1, quantiles)
@@ -83,7 +62,6 @@ def quantile_init_s(X_all, n_states):
 
 
 def regularize_transmat_s(P, n_states):
-    """Regularize transition matrix with Dirichlet prior for any S."""
     alpha = np.full((n_states, n_states), DIRICHLET_OFF)
     np.fill_diagonal(alpha, DIRICHLET_DIAG)
     for i in range(n_states):
@@ -97,7 +75,6 @@ def regularize_transmat_s(P, n_states):
 
 
 def fit_hmm_with_states(X_all, lengths, n_states):
-    """Fit HMM with a specific state count, return model + BIC + ICL."""
     init_means, init_covars = quantile_init_s(X_all, n_states)
 
     init_transmat = np.full((n_states, n_states), 0.005)
@@ -188,7 +165,6 @@ def fit_hmm_with_states(X_all, lengths, n_states):
 
 
 def blocked_cv_loglik(X_all, lengths, country_order, n_states, n_folds=5):
-    """Blocked cross-validation: hold out contiguous country blocks."""
     rng = np.random.RandomState(42)
     indices = np.arange(len(country_order))
     rng.shuffle(indices)
@@ -236,7 +212,6 @@ def blocked_cv_loglik(X_all, lengths, country_order, n_states, n_folds=5):
 
 
 def validate_s(state_df, n_states):
-    """Validate against V-Dem regime classification."""
     vdem = pd.read_csv(
         os.path.join(os.path.dirname(__file__), "..", "data", "vdem_v16.csv"),
         low_memory=False, usecols=["country_name", "year", "v2x_regime", "v2x_polyarchy"],
@@ -278,7 +253,6 @@ def validate_s(state_df, n_states):
 
 
 def decode_states(model, X_all, lengths, country_order, df, n_states):
-    """Decode states from fitted HMM."""
     rows = []
     offset = 0
 

@@ -1,29 +1,3 @@
-"""
-Does the pipeline add anything on top of polyarchy trend?
-
-A head-to-head cannot answer this. A four-variable polyarchy model reaching
-AUC 0.719 against the full pipeline's 0.729 shows the simple model captures
-most of the recoverable signal; it does not show the pipeline is redundant,
-because two models can score alike while ranking different countries correctly.
-What settles it is whether pipeline information adds to the simple model when
-both are available, and whether it adds at the top of the list where an
-operator actually acts.
-
-Four comparisons, all under the locked protocol (democratic at-risk pool,
-predictors dated t or earlier, rolling origins, nothing tuned on the pooled
-predictions):
-  simple      polyarchy level, 1yr and 3yr change, 5yr rolling mean
-  pipeline    the engineered Stage-5 feature matrix
-  combined    both feature sets in one model
-  blend       rank-average of the simple and pipeline scores
-
-Reports AUC, average precision, precision at the top of the annual list, and
-the correlation between the two models' rankings, which is the direct evidence
-on whether they are seeing the same thing.
-
-Outputs robustness/parsimony_complementarity.csv.
-"""
-
 import os
 import sys
 import warnings

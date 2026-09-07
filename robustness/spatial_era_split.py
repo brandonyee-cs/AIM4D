@@ -1,16 +1,3 @@
-"""C.7 specification ladder split at 2005.
-
-Section C.5 reports that the contiguity channel is carried by the pre-2005
-democratization wave and falls to near zero across the backsliding era. Section
-C.7 reports a full-panel autoregressive parameter of 0.333 under the Lee best
-instrument. Those are estimated on different samples, so this script re-runs the
-C.7 ladder separately on the pre-2005 and post-2005 halves and reports the
-autoregressive parameter in each. That is the comparison needed to say whether
-the two sections agree or conflict.
-
-Outputs robustness/spatial_era_split.csv.
-"""
-
 import os
 import sys
 import warnings
@@ -63,8 +50,6 @@ def run(p, W, countries, tag):
           f"{yr.min()}--{yr.max()}")
     base = fit_all(y, Xe, WX, Wop, cid)
 
-    # Same residual bootstrap as spatial_models.main(): hold the network fixed,
-    # resample only the innovations, and generate from the estimator's own fit.
     rng = np.random.default_rng(20260905)
 
     def neumann(vec, coef, iters=40):

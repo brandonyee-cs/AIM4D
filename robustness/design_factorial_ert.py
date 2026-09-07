@@ -1,18 +1,3 @@
-"""The design factorial rerun on the unmodified ERT v16 outcome.
-
-design_factorial.py varies the four evaluation-design choices on our
-hand-maintained episode set. Because that set is country-keyed it cannot carry
-recurrent onsets, and the framework-versus-parsimony ordering is known to turn
-on the outcome definition. This reruns the identical experiment against the
-published ERT release so the design marginals can be read off the outcome the
-field would use.
-
-Everything except the outcome is held fixed: the same feature matrix, the same
-three learner families, the same three seeds, the same sixteen cells.
-
-Outputs robustness/design_factorial_ert.csv.
-"""
-
 import itertools
 import os
 import sys
@@ -104,7 +89,6 @@ def main():
     df = pd.DataFrame(rows)
     df.to_csv(os.path.join(OUT, "design_factorial_ert.csv"), index=False)
 
-    # Marginals: average the paired comparisons in which only one dimension moves.
     keys = ["risk_set", "label", "origin", "closure"]
     print("\nmarginal effect of each dimension (paired comparisons):")
     marg = []

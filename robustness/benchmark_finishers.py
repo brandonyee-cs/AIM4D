@@ -1,18 +1,3 @@
-"""Two finishers for the external-benchmark comparison, on the strict 2019 hold-out.
-
-  leakage_audit:   the raw-indicator booster can look strong partly because a few
-                   V-Dem variables are near-outcome (regime-end type, cumulative
-                   "stock" measures). Re-score it with those dropped to report a
-                   fair ceiling.
-  non_vdem_ablation: how much discrimination survives using ONLY non-V-Dem
-                   predictors (GDELT events + World Bank macro). The circularity
-                   check reviewers ask for, complementing the non-V-Dem OUTCOME
-                   validation (Polity/FH) the paper already has.
-
-Both reuse the loaders and the strict-2019 hold-out from the benchmark scripts so
-they sit on the same labels, folds, and post-onset handling.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",

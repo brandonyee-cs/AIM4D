@@ -1,22 +1,3 @@
-"""Leave-one-stage-out ablation on the headline out-of-sample metric.
-
-The reviewer asks whether removing a pipeline stage actually costs out-of-sample
-discrimination, so that the five-stage architecture is costed against the degrees
-of freedom it introduces. We answer this directly for Stage 4 (the Network SCM /
-contagion module), which is the gateway through which Stages 2 (time-varying
-betas) and 3 (regime-state HMM) reach the Stage-5 forecaster: their only path to
-the final risk score is the Stage-4 contagion feature, so dropping Stage 4 costs
-the entire mechanism block at once. Stage 1 (factor extraction) underlies every
-downstream feature and is not separately removable; Stage 5 is the forecaster
-itself.
-
-For each variant we re-fit the Stage-5 meta-ensemble and read the strict OOS
-(year > cutoff) AUC-PR and AUC-ROC. We repeat across random-seed offsets so the
-full-minus-ablated gap can be judged against seed-to-seed noise (the standard
-ablation-reporting convention: report the delta with its seed spread). Runs use
-AIM4D_NO_WRITE so the registered ews_signals.csv is never overwritten.
-"""
-
 import json
 import os
 import subprocess

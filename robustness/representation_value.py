@@ -1,16 +1,3 @@
-"""Does the staged representation earn its keep? The clean, non-circular test
-(Koh et al. 2020 concept-bottleneck logic; Bernanke-Boivin-Eliasz 2005 FAVAR):
-build the regime classifier ON the extracted factors versus ON the raw 332
-indicators, and ask which agrees better with the EXTERNAL Regimes-of-the-World
-typology that neither was fit on. If the factor representation yields
-better-validated regimes, the upstream factor stage demonstrably improves the
-downstream stage rather than merely sitting beside it.
-
-Non-circular because RoW is external (used for neither fit) and the factors are
-extracted unsupervised. Reuses the simplified HMM + kappa-vs-RoW machinery from
-sanity_checks.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",

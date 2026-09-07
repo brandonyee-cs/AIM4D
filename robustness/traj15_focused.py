@@ -1,24 +1,3 @@
-"""
-Focused test of the one arm that beat everything on average precision.
-
-Across the whole strategy search, the single best average precision came from
-trajectory-shape features over a fifteen-year window (AP 0.266 against a base
-rate of 0.102), even though its AUC of 0.70 was unremarkable. That combination
-matters here: at a ten percent base rate average precision is the metric an
-operator feels, and AUC is not. The contrast was not significant in the sweep
-that produced it, so this re-tests it directly.
-
-Shape statistics per variable over the trailing fifteen years: level, slope,
-curvature, dispersion, drawdown from the running peak, net change, the share of
-years in decline, and the longest unbroken decline. Everything is computed from
-years t-14..t inclusive, so nothing crosses the forecast origin.
-
-Protocol is the locked one: democratic at-risk pool, predictors dated t or
-earlier, rolling origins, aggregation chosen inside the training window.
-
-Outputs robustness/traj15_focused.csv.
-"""
-
 import os
 import sys
 import warnings
@@ -46,7 +25,6 @@ RNG = np.random.default_rng(20260904)
 
 
 def shape_stats(a):
-    """Trajectory descriptors for one trailing window; a is (n, WIN), oldest first."""
     n, w = a.shape
     x = np.arange(w, dtype=float)
     xc = x - x.mean()

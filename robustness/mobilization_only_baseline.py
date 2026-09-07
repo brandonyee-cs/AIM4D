@@ -1,15 +1,3 @@
-"""
-Baseline: mobilization-only logistic model under the strict 2019 hold-out.
-
-Scores a logistic regression on the six mobilization features alone
-(v2cagenmob, v2cademmob, v2caautmob and their detrended forms) with the
-identical protocol as the Table 5 baseline ladder: train through 2019,
-score post-2019 country-years with post-onset years excluded. Shows how
-far the headline channel gets by itself, absent the multi-channel system.
-
-Output: robustness/mobilization_only_baseline.csv
-"""
-
 import os
 import sys
 

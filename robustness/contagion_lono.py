@@ -1,10 +1,3 @@
-"""Leave-one-neighbor-out for the contagion channel: confirm the recent-era
-cultural-bloc diffusion signal does not hinge on a single influential hub
-(Hungary in particular). For each high-degree country we zero its edges in the
-cultural weight matrix, rebuild the spatial lag, and re-estimate the post-2005
-change-spec coefficient. A stable alpha across drops means no one node drives it.
-"""
-
 import os
 import sys
 import warnings

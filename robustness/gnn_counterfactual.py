@@ -1,29 +1,3 @@
-"""
-GNN counterfactual decomposition — neighbor-swap analysis.
-
-INETARNet's outcome head depends on (a) the ego country's own features and (b)
-the spatial lag block aggregated from its neighbors. We exploit that to
-compute counterfactuals of the form:
-
-  "What would Hungary's predicted trajectory look like if it had Türkiye's
-   neighbor profile in 2024 instead of its own?"
-
-We refit Stage 4's INETARNet once, then for each (target, reference) pair at
-each year T, we predict three quantities:
-
-  - actual:        target's ego  + target's spatial lag         (baseline)
-  - swap:          target's ego  + reference's spatial lag      (counterfactual)
-  - no_contagion:  target's ego  + zeroed spatial lag           (existing method)
-
-Outputs help anchor causal-style claims like "without alliance/contiguity
-contagion, Hungary would have remained ~X polyarchy". The delta is **descriptive
-under the model's identifying assumptions**, not a randomized-experiment
-counterfactual.
-
-Output: robustness/gnn_counterfactual.csv with one row per (target, reference,
-year, outcome_class). Run time ~5-10 min on Brev.
-"""
-
 import os
 import sys
 import numpy as np

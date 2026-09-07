@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# Upload the AIM4D repo + non-tracked data to a Brev instance.
-# Usage:  BREV_HOST=user@brev-host ./brev/upload.sh
-#         (optional) BREV_PATH=~/AIM4D
 set -euo pipefail
 
 : "${BREV_HOST:?Set BREV_HOST=user@host}"

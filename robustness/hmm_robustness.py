@@ -1,17 +1,3 @@
-"""Stage-3 regime-model robustness.
-
-  lr_test       : parametric-bootstrap likelihood-ratio test for K=5 vs K=4 states
-                  (Qu-Shi-Shum logic). Standard asymptotics fail for the number of
-                  regimes, so the null distribution of LR = 2(LL5 - LL4) is built by
-                  simulating from the fitted K=4 model and refitting both K on each
-                  draw.
-  confusion     : confusion matrix of the production states against V-Dem Regimes
-                  of the World, beyond the aggregate weighted kappa.
-  sojourn       : empirical mean state durations (run lengths) from the production
-                  state sequences, checked against the persistence the typology
-                  implies.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",

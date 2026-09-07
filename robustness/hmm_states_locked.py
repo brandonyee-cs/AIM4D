@@ -1,28 +1,3 @@
-"""
-HMM state count sensitivity under the LOCKED Stage 3 specification.
-
-hmm_states.py sweeps S under a specification that differs from the pipeline's
-own in four ways: it uses a full rather than diagonal covariance, 20 rather
-than 60 restarts, no posterior stabilization filter, and it fits on the whole
-panel rather than the pre-cutoff training subset. Those choices are why its
-S=5 weighted kappa reads 0.67 against the locked pipeline's 0.72, a gap that
-the paper previously reported without reconciling.
-
-This script re-runs the same sweep under the locked specification: diagonal
-covariance with min_covar 0.05, Dirichlet-regularized transitions, 60
-restarts with the ordering and separation constraints, a training fit
-restricted to year <= AIM4D_CUTOFF, and decoding through the duration
-dependent stabilization filter. Agreement is scored with the same
-state-count-specific V-Dem mapping hmm_states.py uses, so the columns stay
-comparable across S.
-
-DURATION_PARAMS is keyed by state index and covers five states; for S=6 the
-sixth index falls through to a zero duration bonus, and for S<5 the surplus
-keys are unused.
-
-Outputs robustness/hmm_states_locked_results.csv.
-"""
-
 import os
 import sys
 import warnings

@@ -1,12 +1,3 @@
-"""
-Cross-validation against Polity V regime scores.
-
-Validates that AIM4D predictions correlate with non-V-Dem outcome measures,
-addressing the V-Dem circularity concern.
-
-Tests: Does AIM4D combined_risk predict Polity score declines?
-"""
-
 import sys
 import os
 import warnings

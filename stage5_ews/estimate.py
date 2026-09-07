@@ -34,8 +34,6 @@ WATCH_PCTL = float(os.environ.get("AIM4D_WATCH_PCTL", "0.80"))
 WARNING_PCTL = float(os.environ.get("AIM4D_WARNING_PCTL", "0.95"))
 ALERT_PCTL = float(os.environ.get("AIM4D_ALERT_PCTL", "0.98"))
 SEED_OFFSET = int(os.environ.get("AIM4D_SEED_OFFSET", "0"))
-# Referee2 round 1: the CSD surrogate generator draws from the global numpy RNG;
-# without this every run produced different eig/xcorr trend signals and alert tiers.
 np.random.seed(42 + SEED_OFFSET)
 NO_WRITE = (os.environ.get("AIM4D_NO_WRITE") == "1"
             or bool(os.environ.get("AIM4D_ABLATE_GROUP", "").strip())
@@ -43,7 +41,6 @@ NO_WRITE = (os.environ.get("AIM4D_NO_WRITE") == "1"
 
 
 def lead_for(info):
-    """Return type-appropriate pre-onset label window."""
     return LEAD_YEARS_COUP if info.get("type") == "coup" else LEAD_YEARS
 
 KNOWN_EPISODES = {
@@ -142,12 +139,6 @@ def load_residuals():
 
 
 def rolling_stats(series, window=WINDOW, min_w=MIN_WINDOW):
-    """
-    G8: Extended CSD indicators. Adds skewness and absolute-residual mean
-    on top of the original variance/AR(1)/kurtosis. Skewness is the
-    asymmetry of fluctuations, a well-attested pre-bifurcation signal
-    (Scheffer 2009 review).
-    """
     n = len(series)
     r_var = np.full(n, np.nan)
     r_ar1 = np.full(n, np.nan)
@@ -221,11 +212,6 @@ def persistence_filter(alerts, min_c=PERSISTENCE):
 
 
 def multivariate_csd(resid_matrix, window=WINDOW, min_w=MIN_WINDOW):
-    """
-    Multivariate CSD indicators (Weinans et al. 2021, Held & Kleinen 2004).
-    Tracks dominant eigenvalue of cross-factor covariance and mean cross-correlation
-    in a rolling window — captures correlated fluctuations across factors.
-    """
     n, d = resid_matrix.shape
     dom_eig = np.full(n, np.nan)
     mean_xcorr = np.full(n, np.nan)
@@ -258,10 +244,6 @@ def multivariate_csd(resid_matrix, window=WINDOW, min_w=MIN_WINDOW):
 
 
 def kendall_tau_with_surrogates(series, window=WINDOW, n_surrogates=N_SURROGATES):
-    """
-    Kendall tau trend test with ARMA surrogate significance (Dakos et al. 2012).
-    Returns tau values and boolean significance at each time step.
-    """
     n = len(series)
     taus = np.full(n, np.nan)
     significant = np.zeros(n, dtype=bool)
@@ -317,11 +299,6 @@ def compute_election_vulnerability():
             has_election = np.maximum(has_election, vdem[et].fillna(0).values)
     vdem["has_election"] = has_election
 
-    # A centered window lets year t see an election at t+1. V-Dem records elections
-    # that occurred, not calendars that were published, so that is knowledge of an
-    # outcome partly determined by the process being forecast: cancelled, postponed
-    # and snap elections are exactly the politically informative cases. The backward
-    # window is the default and matches the sibling column built at G5 below.
     _elec_mode = os.environ.get("AIM4D_ELECTION_WINDOW", "backward")
     _centered = _elec_mode == "centered"
     vdem["election_within_2yr"] = vdem.groupby("country_text_id")["has_election"].transform(

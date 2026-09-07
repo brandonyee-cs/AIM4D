@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# Phase 2: regenerate every paper-relevant robustness artifact against the
-# fresh canonical pipeline outputs, cheap scripts first, heavy refit scripts
-# last. prospective_drivers.py is deliberately excluded: Table 9 is the
-# registered 2026-2031 forecast and its frozen CSV must not be regenerated.
 set -uo pipefail
 cd "$(dirname "$0")"
 

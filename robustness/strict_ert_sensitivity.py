@@ -1,22 +1,3 @@
-"""
-The strict comparison under the unmodified ERT outcome definition.
-
-The paper's episode set is a hand-maintained dictionary keyed by country. It
-carries at most one episode per country, so of the 110 autocratization episodes
-ERT v16 records with an onset from 1996 on, 26 belonging to the 20 countries with
-more than one cannot be represented at all, and a recurrent onset after an
-earlier episode ends is unlabelled even though the risk set lets the country back
-in.
-
-This rebuilds the outcome from the published ERT file with every episode kept,
-labels a country-year positive when any onset falls in the forecast window, and
-treats a country as in-episode whenever any episode interval covers the year.
-It then reruns the strict comparison so the two outcome definitions can be read
-side by side.
-
-Outputs robustness/strict_ert_sensitivity.csv.
-"""
-
 import os
 import re
 import sys
@@ -90,7 +71,6 @@ def rolling(d, feats, mk):
 
 
 def persistence(d, ORIGINS, H):
-    """3-year polyarchy decline, the same trend-extrapolation rung as Table 5 Panel A."""
     rows = []
     for T in ORIGINS:
         te = d[(d.year == T) & d.at_risk]
@@ -137,7 +117,6 @@ def main():
     b["p"] = acc / len(parts)
 
     def model_ci(df, seed=20260905, n_boot=2000):
-        """Country-clustered percentile bootstrap CI for one model."""
         rng = np.random.default_rng(seed)
         y, pp, cc = df["y"].values, df["p"].values, df["country_name"].values
         uniq = np.unique(cc)
@@ -177,7 +156,6 @@ def main():
               f"n={r['n']} pos={r['n_pos']} base={r['base_rate']:.3f}")
     pd.DataFrame(rows).to_csv(os.path.join(OUT, "strict_ert_sensitivity.csv"), index=False)
 
-    # Row-level predictions, so the paired intervals below can be reproduced.
     preds = b.rename(columns={"p": "p_framework"}).merge(
         p4.rename(columns={"p": "p_poly4"}), on=["year", "country_name", "y"])
     preds.to_csv(os.path.join(OUT, "strict_ert_sensitivity_predictions.csv"), index=False)
@@ -202,9 +180,6 @@ def main():
     print(f"\nframework minus four variables, all origins ({preds.year.min()}--{preds.year.max()}):")
     print(f"  dAUC {ma:+.3f} [{la:+.3f}, {ha:+.3f}]   dAP {mp:+.3f} [{lp:+.3f}, {hp:+.3f}]")
 
-    # The paper's episode set skips 2005-2007 under the five-positive training rule,
-    # so the two outcome definitions are not scored on the same origins. Restricting
-    # to the common window separates the outcome change from the sample change.
     common = preds[preds.year >= 2008]
     (ma2, la2, ha2), (mp2, lp2, hp2) = paired(common, "p_framework", "p_poly4")
     print(f"common origins 2008--2020 only, n={len(common)} pos={int(common.y.sum())}:")

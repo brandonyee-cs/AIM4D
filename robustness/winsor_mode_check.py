@@ -1,16 +1,3 @@
-"""Symmetric versus upper-tail winsorization of the Stage 2 betas, on the current pipeline.
-
-Appendix B states that switching from upper-tail to symmetric winsorization changes a
-small number of beta observations and leaves the regime classifier's weighted kappa,
-the 2019 hold-out AUC and the LOEO tier counts essentially unchanged. This re-derives
-those four quantities by refitting the whole pipeline twice in isolated worktrees, once
-per AIM4D_WINSOR_MODE, so the canonical outputs are never touched. Kappa is read from
-the Stage 3 log of each run; the hold-out and LOEO figures are scored from each run's
-artifacts with the same evaluate_fold used elsewhere.
-
-Output: robustness/winsor_mode_check.csv (one row per mode) and a printed comparison.
-"""
-
 import os
 import re
 import subprocess

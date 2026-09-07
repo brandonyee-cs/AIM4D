@@ -1,29 +1,3 @@
-"""
-Maximize honest forecasting skill for autocratization onset among democracies.
-
-Same estimand and protocol as onset_forecast_clean.py: the at-risk pool is
-democratic country-years not already inside an episode, the target is an onset
-during t+1..t+h, and every predictor is dated t or earlier with forecasts made
-from rolling origins. Nothing here touches the scored year.
-
-What changes is the input space and the model selection. The Stage-5 feature
-matrix was engineered for pre-onset-window membership, a different target, so
-this adds predictors the comparative literature actually nominates for onset
-risk: the protective belt of judicial and legislative constraints, rule of law,
-civil-society participation and party institutionalization; polarization;
-clientelism and neopatrimonial rule; media freedom; and the dynamics of each,
-since a level and a three-year slide carry different information. It also adds
-lagged regional and global onset counts, which are legitimate here because they
-are computed only from onsets already observed at the forecast origin.
-
-Hyperparameters are chosen by blocked time-series validation INSIDE the
-training window at each origin. The scored year never participates in
-selection, so the reported figures remain out of sample in the information
-sense and not merely the row sense.
-
-Outputs robustness/onset_forecast_optimized.csv and *_predictions.csv.
-"""
-
 import os
 import re
 import sys
@@ -99,12 +73,6 @@ def enrich(d):
 
 
 def feature_list(d):
-    """Every label column must be excluded, not just the one for the active horizon.
-
-    A previous version dropped only y{H}. Any other y{h} created on the same frame
-    survived into the feature matrix and predicted itself, which is why h=1 once
-    returned an AUC of 0.9995.
-    """
     drop = set(EXCLUDE_COLS) | {"v2x_regime", "onset_year", "ep_end", "in_episode", "at_risk"}
     drop |= {c for c in d.columns if re.fullmatch(r"y\d+", str(c))}
     return [c for c in d.columns if c not in drop and d[c].dtype != object]
@@ -123,7 +91,6 @@ def fit_predict(cfg, kind, Xtr, ytr, Xte, w=None):
 
 
 def inner_select(tr, feats, h, kind, grid):
-    """Blocked time-series validation strictly inside the training window."""
     yrs = np.sort(tr.year.unique())
     if len(yrs) < 12:
         return grid[0]

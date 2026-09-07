@@ -1,13 +1,4 @@
 #!/usr/bin/env bash
-# Rerun every script that backs a manuscript number and depends on
-# stage5_ews/ews_signals.csv, after the Stage 4 fixes (causal temporal edges,
-# EXCLUDE_COUNTRY honoured, econ-similarity on raw GDP) and the Stage 5 RNG seed.
-#
-# prospective_drivers.py is deliberately absent: its output is the frozen
-# registered forecast and must not be regenerated.
-#
-# Tiers are ordered cheap -> expensive so headline numbers land first. Tier 3
-# scripts each already use multiple workers, so they run one at a time.
 set -u
 cd "$(dirname "$0")"
 PY="${AIM4D_PYTHON:-/Users/jacobcrainic/AIM4D/.venv_ablation/bin/python}"

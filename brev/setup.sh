@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# Run once on the Brev instance after the repo is uploaded. Idempotent.
-# Defaults to GDELT-only minimal install. Set FULL=1 to install the entire
-# pipeline (torch, torch-geometric, hmmlearn, etc.).
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -9,7 +6,6 @@ cd "$(dirname "$0")/.."
 if [[ ! -d .venv ]]; then
   python3 -m venv .venv
 fi
-# shellcheck disable=SC1091
 source .venv/bin/activate
 
 pip install --upgrade pip

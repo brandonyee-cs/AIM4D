@@ -1,24 +1,3 @@
-"""
-Threshold sensitivity analysis + Thailand near-miss investigation.
-
-Sweeps the EWS alert threshold to show results aren't threshold-dependent,
-generates precision/recall/F1 curves, calibration analysis, and investigates
-the Thailand LOEO near-miss (0.007 below threshold).
-
-Methodological basis:
-  - Saito & Rehmsmeier (2015): PR curves for imbalanced data
-  - Cranmer & Desmarais (2017): threshold selection in polsci prediction
-  - Niculescu-Mizil & Caruana (2005): calibration plots
-  - Vickers & Elkin (2006): decision curve analysis
-
-Reports:
-  - Precision/recall/F1 at multiple thresholds
-  - ROC + PR curve data
-  - Calibration analysis (observed vs predicted risk)
-  - Thailand-specific near-miss analysis
-  - Multi-threshold stability table
-"""
-
 import sys
 import os
 import numpy as np
@@ -32,7 +11,6 @@ OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def load_ews():
-    """Load EWS signals — run full stage 5 to get all columns (meta-learner, election, military)."""
     try:
         from stage5_ews.estimate import run_ews
         print("Running full stage 5 to get enriched EWS data...")
@@ -46,7 +24,6 @@ def load_ews():
 
 
 def compute_labels(df):
-    """Assign binary labels based on known episodes."""
     known_w = {}
     for c, info in KNOWN_EPISODES.items():
         for y in range(info["onset"] - LEAD_YEARS, info["onset"] + 1):
@@ -58,7 +35,6 @@ def compute_labels(df):
 
 
 def threshold_sweep(df, risk_col="combined_risk", n_thresholds=50):
-    """Sweep thresholds and compute precision/recall/F1 at each."""
     valid = df.dropna(subset=[risk_col])
     if valid["label"].sum() == 0:
         return pd.DataFrame()
@@ -98,7 +74,6 @@ def threshold_sweep(df, risk_col="combined_risk", n_thresholds=50):
 
 
 def detection_by_threshold(df, risk_col="combined_risk", n_thresholds=20):
-    """For each threshold, which episodes are detected?"""
     valid = df.dropna(subset=[risk_col])
     thresholds = np.linspace(
         valid[risk_col].quantile(0.70),
@@ -130,7 +105,6 @@ def detection_by_threshold(df, risk_col="combined_risk", n_thresholds=20):
 
 
 def calibration_analysis(df, risk_col="combined_risk", n_bins=10):
-    """Calibration: how well do predicted risks match observed frequencies?"""
     valid = df.dropna(subset=[risk_col])
     if valid["label"].sum() == 0:
         return pd.DataFrame()
@@ -147,7 +121,6 @@ def calibration_analysis(df, risk_col="combined_risk", n_bins=10):
 
 
 def thailand_analysis(df, risk_col="combined_risk"):
-    """Deep dive into Thailand's LOEO near-miss."""
     print(f"\n{'='*50}")
     print("THAILAND NEAR-MISS ANALYSIS")
     print(f"{'='*50}")
@@ -205,10 +178,6 @@ def thailand_analysis(df, risk_col="combined_risk"):
 
 
 def multi_stage_threshold_sensitivity(df):
-    """
-    Test sensitivity to the two most consequential thresholds:
-    CSD z-score threshold and meta-learner percentile threshold.
-    """
     print(f"\n{'='*50}")
     print("MULTI-STAGE THRESHOLD SENSITIVITY")
     print(f"{'='*50}")

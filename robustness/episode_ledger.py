@@ -1,16 +1,3 @@
-"""
-Machine-readable outcome ledger, reconciled against the official ERT release.
-
-The paper's episode set has been a hand-maintained dictionary keyed by country,
-which carries at most one episode per country and no episode identifiers or end
-dates. This builds the ledger from the published ERT file, records every
-departure the paper's set makes from it, and reports the two consequences that
-bear on the forecasting results: countries with more than one autocratization
-episode, and episodes beginning after the paper's latest recorded onset.
-
-Outputs robustness/episode_ledger.csv and prints the reconciliation.
-"""
-
 import os
 import sys
 
@@ -19,8 +6,6 @@ import pandas as pd
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 OUT = os.path.dirname(os.path.abspath(__file__))
-# ERT v16, vendored so the ledger does not depend on a path outside the repo.
-# Source: https://github.com/vdeminstitute/ERT (release v16), file inst/ert.csv
 ERT = os.environ.get("AIM4D_ERT_CSV",
                      os.path.join(os.path.dirname(__file__), "..", "data", "ert_v16", "ert.csv"))
 ERT_SHA256 = "26e805df073a26973f5c0fbefdcdd0d20776245d71092a575063e47ffac6db5f"
@@ -59,9 +44,6 @@ def main():
                           "paper_peak": v.get("peak", v["onset"]),
                           "paper_type": v.get("type", "")} for c, v in K.items()])
 
-    # Reconcile per paper entry. Merging on country alone matches a country with
-    # three ERT episodes to its single paper row three times, which would report
-    # two spurious disagreements for every recurrent country.
     by_country = {c: g for c, g in ep.groupby("country_name")}
     recs = []
     for _, r in ours.iterrows():
@@ -78,9 +60,6 @@ def main():
                      "end": int(row["end"]),
                      "status": "onset_matches_ert" if len(exact)
                      else ("onset_within_2yr" if len(near) else "onset_differs")})
-    # Carry the full ERT record onto every matched row. Building the matched rows
-    # from the paper's entry alone would leave country_text_id, outcome and the
-    # censoring flag empty exactly where the reconciliation is most informative.
     rec_df = pd.DataFrame(recs)
     keep = ["aut_ep_id", "country_text_id", "outcome", "censored", "end"]
     rec_df = rec_df.drop(columns=[c for c in keep if c in rec_df.columns and c != "aut_ep_id"],
@@ -98,8 +77,6 @@ def main():
     dest = os.path.join(OUT, "episode_ledger.csv")
     m.to_csv(dest, index=False)
 
-    # Assertions, because the previous version printed a success message while
-    # writing nothing and left a stale country-level merge on disk.
     back = pd.read_csv(dest)
     assert len(back) == len(m), "ledger did not round-trip"
     dup = back[back["aut_ep_id"].notna()]["aut_ep_id"]

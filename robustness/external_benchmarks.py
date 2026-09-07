@@ -1,23 +1,3 @@
-"""External forecasting benchmarks re-estimated on the AIM4D autocratization panel.
-
-Four comparators, each a faithful reimplementation of a published specification
-re-fit on our ERT 5-year pre-onset label, never a transfer of published numbers:
-
-  persistence    trend-extrapolation baseline (ViEWS bm_last_historical philosophy):
-                 the trailing 3-year decline in v2x_polyarchy used directly as risk.
-  pitf           Goldstone et al. (2010) four-variable logit: regime type
-                 (Polity EXREC x PARCOMP), log-normalised infant mortality,
-                 autocratizing-neighbourhood, state-led discrimination.
-  elastic_net    L1/L2-penalised logit on the full 332-indicator V-Dem space
-                 (the dimensionality alternative to Stage-1 factor extraction).
-  vforecast      Morgan, Beger & Glynn (2019) PART recipe: unweighted ensemble of
-                 elastic-net logit + random forest + gradient-boosted forest on the
-                 same 332-indicator space.
-
-Every row runs through baseline_comparison's labels, WINDOWS, and evaluate(), so
-results sit directly alongside the in-house baselines and AIM4D.
-"""
-
 import sys
 import os
 import time
@@ -53,8 +33,6 @@ IND_PKL = os.path.join(BASE, "data", "_ind_panel.pkl")
 
 
 def _load_vdem():
-    """Read the 3,872-column V-Dem file once, cached to a pickle so reruns skip
-    the multi-minute CSV parse."""
     global _VDEM_CACHE
     if _VDEM_CACHE is None:
         if os.path.exists(VDEM_PKL):
@@ -66,15 +44,12 @@ def _load_vdem():
 
 
 def make_enet():
-    """Elastic-net logit via stochastic gradient: a defensible penalised baseline
-    that fits in well under a second, where the saga solver took ~2 minutes."""
     return SGDClassifier(loss="log_loss", penalty="elasticnet", l1_ratio=0.5,
                          alpha=1e-4, max_iter=1000, tol=1e-3, class_weight="balanced",
                          random_state=42)
 
 
 def load_panel():
-    """Country-year panel with the PITF inputs and persistence score merged on."""
     vdem = _load_vdem()
     vdem = vdem[(vdem["year"] >= 1970) & (vdem["year"] <= 2025)].copy()
 
@@ -124,8 +99,6 @@ def load_panel():
 
 
 def load_indicator_panel():
-    """The 332-indicator V-Dem matrix used by Stage 1, with onset labels merged on.
-    Cached to a pickle so the interpolation in build_panel runs only once."""
     if os.path.exists(IND_PKL):
         cached = pd.read_pickle(IND_PKL)
         return cached["panel"], cached["indicators"]
@@ -190,7 +163,6 @@ def score_row(panel, score_col, name, label="label"):
 
 
 class UnweightedEnsemble:
-    """V-Forecast PART ensemble: mean predicted probability across constituents."""
 
     def __init__(self):
         self.members = [

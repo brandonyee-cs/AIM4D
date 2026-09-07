@@ -1,24 +1,3 @@
-"""
-End-to-end strict forecasting: rebuild the whole pipeline at each forecast origin.
-
-The strict evaluation elsewhere in this paper closes the downstream learner's
-training windows but leaves the upstream representation fit once on the whole
-panel, so the factors, betas, regime states and network components entering the
-forecaster were constructed with knowledge of years after the origin. This
-removes that. At origin T all five stages are refit on data through T, which is
-everything a forecaster would hold at T, the downstream learner is trained only
-on rows whose outcome window closed by T-h, and the rows dated T are scored.
-
-Comparing the result against the full-sample-representation figure bounds how
-much the shared representation was worth.
-
-ERT VARIANT: the outcome comes from the unmodified ERT v16 release rather than
-the hand-maintained ledger. Everything else, including the per-origin truncation
-and five-stage rebuild, is unchanged.
-
-Outputs robustness/strict_endtoend_refit_ert.csv.
-"""
-
 import os
 import shutil
 import sys
@@ -50,13 +29,6 @@ EXCLUDE = {"country_name", "country_text_id", "year", "label", "label_soft",
 
 
 def panel_from(worktree):
-    """Stage 5 panel from a per-origin worktree, labelled from ERT v16.
-
-    Identical to strict_endtoend_refit.panel_from except that episode membership
-    is the union of all ERT intervals for a country and the label fires on any
-    ERT onset in t+1..t+H, so recurrent onsets are represented. The country-keyed
-    ledger cannot carry those.
-    """
     from episode_ledger import ert_episodes
     d = pd.read_csv(os.path.join(worktree, "stage5_ews", "ews_signals.csv"))
     v = pd.read_csv(os.path.join(worktree, "data", "vdem_v16.csv"), low_memory=False,
@@ -90,14 +62,6 @@ def panel_from(worktree):
 
 
 def truncated_data_dir(T):
-    """A data directory holding nothing dated after T.
-
-    Setting AIM4D_CUTOFF restricts what each stage fits on, but the worktrees
-    symlink the canonical data directory, so the filters and decoders still run
-    across the whole panel: a smoothed regime state at year t is computed from a
-    sequence that extends to 2025. Truncating the inputs removes that, because
-    no observation after T exists anywhere in the run.
-    """
     dst = os.path.join(REPO_DATA_ROOT, f"_trunc_{T}")
     if os.path.isdir(dst):
         shutil.rmtree(dst)
@@ -196,7 +160,6 @@ def main():
     from scipy.stats import rankdata
     b = d.pivot_table(index=["origin", "country_name", "y"], columns="learner", values="p").reset_index()
     cols = [c for c in ["gb", "rf", "lr"] if c in b.columns]
-    # Rank within each origin, not across the pooled evaluation rows.
     def within(v):
         r = np.zeros(len(v))
         for o in np.unique(b["origin"].values):

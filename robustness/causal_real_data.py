@@ -1,29 +1,3 @@
-"""Spatial-diffusion evidence for the network-contagion channel, real panel.
-
-Two specifications, because the choice is the whole point (Franzese-Hays
-"Galton's problem"; Plumper-Neumayer 2010; Leeson-Dean 2009 AJPS):
-
-  OVER-CONTROLLED (level + near-unit-root own-lag + year FE):
-    y_{i,t} = c + phi*y_{i,t-1} + alpha*(W y)_{i,t-1} + yearFE + stateFE
-    With phi~0.94 the own-lag and year FE absorb essentially all variance and
-    the spatial term cannot be detected by construction. Reported only to show
-    the artifact.
-
-  LITERATURE-STANDARD (change outcome, contemporaneous spatial lag, NO year FE):
-    dY_{i,t} = c + theta*y_{i,t-1} + alpha*(W dY)_{i,t} + stateFE
-    Estimated by OLS (descriptive) and 2SLS instrumenting the contemporaneous
-    W*dY with the predetermined W*y_{t-1} (Kelejian-Prucha). Year FE dropped
-    because the global wave is part of diffusion; the model's own latent factors
-    already absorb common shocks. The with-FE vs without-FE contrast is the
-    decisive diagnostic.
-
-Plus a node-permutation placebo on W. Identification here is spatial-
-correlational diffusion, NOT experimental causation; the neighbor-contiguity
-channel is known to be the weakest (global/regional comovement dominates,
-Schmotz-Selvik 2025), so claims are calibrated accordingly.
-
-Output: robustness/causal_real_data.csv + stdout.
-"""
 import os
 import sys
 import numpy as np

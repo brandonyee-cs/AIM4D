@@ -1,16 +1,3 @@
-"""
-F5: PITF / IMF-style economic and demographic features from World Bank WDI.
-
-Indicators (Goldstone 2010 PITF, IMF 2024 fragility):
-  - Infant mortality (SP.DYN.IMRT.IN)
-  - Inflation, CPI YoY (FP.CPI.TOTL.ZG)
-  - Food production index (AG.PRD.FOOD.XD)
-  - External debt to GNI (DT.DOD.DECT.GN.ZS)
-  - Working-age share (proxy for youth bulge)
-
-Writes data/macro_pitf.csv merging on (iso3, year).
-"""
-
 import os
 import pandas as pd
 import wbgapi as wb

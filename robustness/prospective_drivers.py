@@ -1,16 +1,3 @@
-"""Per-country risk-driver attribution for the prospective watchlist, replacing
-the hand-labeled 'Primary Signals' column with a computed one.
-
-Following the Early Warning Project's transparent approach (a regularized linear
-attribution of the risk score: contribution_j = coef_j * x_ij, summed within
-channels), we fit a linear surrogate of the meta-learner's risk score on the
-standardized Stage-5 features, verify its fidelity, and report for each top-25
-country the channel contributing most to its elevated risk. Channel-level
-aggregation defeats the within-channel feature correlation that makes
-single-feature attribution unreliable. The label is scoped to the model: it is
-the signal that most raises a country's estimated risk, not a causal claim.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",

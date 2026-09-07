@@ -1,20 +1,3 @@
-"""Exact symbolic verification of Proposition 1's algebraic core (SymPy).
-
-Companion to identification_montecarlo.py, which verifies the asymptotic
-consistency claim numerically. Here we verify the deterministic algebra exactly:
-
-  1. Spatial reduced form (I - aW)^{-1} exists and its identification/stability
-     region is det(I - aW) != 0.
-  2. The LAGGED spatial regressor W*y_{t-1} is orthogonal to the current error
-     e_t if and only if the error is serially uncorrelated (rho = 0). This is
-     the exact form of the sequential-exogeneity condition under which the
-     contagion coefficient is point-identified.
-  3. The CONTEMPORANEOUS spatial regressor W*y_t is mechanically correlated with
-     e_t through (I - aW)^{-1} for any sigma^2 > 0. This is the reflection /
-     simultaneity bias that the lagged design (A2) avoids.
-
-Run:  python3 robustness/verify_proposition_sympy.py
-"""
 import sympy as sp
 
 

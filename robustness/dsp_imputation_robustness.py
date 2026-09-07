@@ -1,17 +1,3 @@
-"""
-Robustness check: DSP imputation strategy.
-
-The Stage 5 default restricts the panel to year >= 2000 (DSP coverage window
-per Mechkova et al. DSP-WP1) and country-forward-fills within. A reviewer may
-ask: have you tested alternative imputation that doesn't drop 26% of rows?
-
-We rerun Stage 5 under two configurations:
-  - ffill_2000 (default)
-  - median_full (keep all years, train-period country-median fill)
-
-Output: robustness/dsp_imputation_robustness.csv with OOS metrics for each.
-"""
-
 import os
 import subprocess
 import sys

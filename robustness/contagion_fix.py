@@ -1,16 +1,3 @@
-"""Pre-specified fix attempt for the recent-era contagion signal: re-run the
-structural spatial-diffusion model on a CULTURAL-bloc weight matrix instead of
-border contiguity. The paper's own GNN gives the four edge types near-equal
-weight and the contiguity channel is the weakest; Schmotz-Selvik (2025) argue
-backsliding diffuses through broad/cultural comovement, not borders. So the
-recent-era null on contiguity may simply be the wrong network.
-
-Cultural-bloc W from cultural_pairs.csv, change-spec dY ~ y_lag + W*dY + C(state),
-full sample and split at 2005, plus a node-permutation placebo on the cultural
-topology. Cultural blocs share much unobserved history, so this is reported as a
-predictive-correlational diffusion association, not a causal effect.
-"""
-
 import os
 import sys
 import warnings

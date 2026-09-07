@@ -1,21 +1,3 @@
-"""
-Lead-time decomposition of OOS forecasting performance.
-
-For each OOS episode (onset > TRAIN_CUTOFF), we have pre-onset country-years at
-leads of 1, 2, 3, 4, 5 years before onset. Bucket the OOS panel by lead-to-onset
-and compute AUC and AUC-PR within each bucket against the same non-episode
-negatives.
-
-Answers the reviewer question: "At a 1-year lead does the model do 0.96 AUC and
-degrade to 0.85 by year 5, or is it the same across the horizon?" The expected
-shape is graceful degradation, which itself is a paper finding.
-
-Output: robustness/lead_time_auc.csv with one row per lead-bucket.
-
-Run AFTER Stage 5 (depends on stage5_ews/ews_signals.csv with calibrated_risk
-and is_postonset columns).
-"""
-
 import os
 import sys
 import numpy as np

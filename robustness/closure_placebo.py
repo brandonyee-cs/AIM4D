@@ -1,22 +1,3 @@
-"""
-Placebo test for the closure effect.
-
-Table~\ref{tab:factorial} attributes a 0.224 AUC drop to requiring training
-outcome windows to close before the forecast origin, and the paper reads that as
-information leakage. An alternative reading is that the open and closed training
-arms differ in sample size and composition, and that the gap reflects those
-differences rather than leakage. If the mechanism is leakage, then destroying the
-link between predictors and onsets should destroy the effect: under permuted
-onset labels there is no future information to leak, so the closure contrast
-should collapse toward zero.
-
-Onsets are permuted across countries, preserving the number of episodes and each
-country's at-risk structure, and the closure contrast is recomputed. The real
-contrast is reported alongside for reference.
-
-Outputs robustness/closure_placebo.csv.
-"""
-
 import os
 import re
 import sys
@@ -53,7 +34,6 @@ def learner(name, seed):
 
 
 def closure_contrast(d, feats, name, seed):
-    """AUC with closure enforced minus AUC with open training windows."""
     out = {}
     for closure in (True, False):
         lag = H if closure else 1

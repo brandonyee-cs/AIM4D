@@ -1,22 +1,3 @@
-"""
-Re-run the baseline ladder under the corrected design.
-
-Table 5 compares the framework against persistence, a PITF-style logit, an
-elastic net, a gradient booster on raw indicators and a V-Forecast-style
-ensemble, all on the old protocol: contemporaneous features, pre-onset-window
-labels, and a risk set that included countries already autocratizing. Those
-numbers are not comparable to anything measured on the corrected design.
-
-The paper's actual claim is relative, not absolute. It says the framework
-matches strong baselines and earns its place through interpretable
-decomposition rather than accuracy. That claim survives a fall in absolute
-performance provided the baselines fall with it. This script tests exactly
-that, putting every baseline on the same clean at-risk pool, the same
-h-step-ahead target, and the same rolling origins.
-
-Outputs robustness/baselines_clean_design.csv.
-"""
-
 import os
 import sys
 import warnings
@@ -79,7 +60,6 @@ def rolling(d, feats, h, make_model, use_scaler=True):
 
 
 def persistence(d, h):
-    """Trend extrapolation: recent polyarchy decline as the only signal."""
     recs = []
     for T in ORIGINS:
         te = d[(d.year == T) & d.at_risk]

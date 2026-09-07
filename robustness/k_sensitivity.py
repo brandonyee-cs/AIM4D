@@ -1,22 +1,3 @@
-"""
-Factor count sensitivity analysis (K=3, 4, 5).
-
-Re-runs POET factor extraction with forced K values, then propagates through
-stages 2-5 to measure downstream impact on regime classification (kappa) and
-early warning performance (AUC, detection rate).
-
-Methodological basis:
-  - Bai & Ng (2002): IC criteria for factor count selection
-  - Fan et al. (2013): POET robustness to K over-estimation
-  - Stock & Watson (2002): forecast accuracy often flat across K range
-
-Reports:
-  - Bai-Ng IC1/IC2/IC3 values for each K
-  - Cumulative variance explained
-  - Tucker congruence coefficients between K=4 baseline and K=3,5 shared factors
-  - Downstream HMM kappa, EWS AUC, detection rate per K
-"""
-
 import sys
 import os
 import numpy as np
@@ -47,7 +28,6 @@ K_VALUES = [3, 4, 5]
 
 
 def extract_with_forced_k(K, panel, indicators, X, scaler):
-    """Run POET with a forced factor count K."""
     result = poet_estimate(X, K)
 
     sign_ref = {0: "v2x_polyarchy", 1: "v2x_corr", 2: "v2x_suffr", 3: "v2xdd_dd"}
@@ -78,7 +58,6 @@ def extract_with_forced_k(K, panel, indicators, X, scaler):
 
 
 def tucker_congruence(L1, L2):
-    """Tucker congruence coefficient between two loading matrices (shared cols)."""
     n_shared = min(L1.shape[1], L2.shape[1])
     coeffs = []
     for k in range(n_shared):
@@ -90,7 +69,6 @@ def tucker_congruence(L1, L2):
 
 
 def run_betas_for_factors(factor_df, K):
-    """Re-run stage 2 beta estimation for a given factor set."""
     factor_cols = [f"factor_{i+1}" for i in range(K)]
     countries = factor_df["country_name"].unique()
     results = []
@@ -162,7 +140,6 @@ def run_betas_for_factors(factor_df, K):
 
 
 def run_hmm_for_factors(factor_df, beta_df, K):
-    """Re-run stage 3 HMM for a given factor count."""
     factor_cols = [f"factor_{i+1}" for i in range(K)]
     beta_cols = [f"beta_factor_{i+1}" for i in range(K)]
 
@@ -204,7 +181,6 @@ def run_hmm_for_factors(factor_df, beta_df, K):
 
 
 def run_ews_detection(factor_df, K):
-    """Simplified EWS detection rate using CSD on factor residuals."""
     from stage5_ews.estimate import (
         rolling_stats, country_z, persistence_filter,
         WINDOW, MIN_WINDOW, BASELINE_END, Z_THRESHOLD, Z_CAP, MIN_ABS_VAR_PCTL,

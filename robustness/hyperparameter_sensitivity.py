@@ -1,25 +1,3 @@
-"""
-Hyperparameter sensitivity sweep (one-at-a-time).
-
-For each of:
-  - POSTONSET_EXCL_YEARS (default 5; try 3, 7)
-  - BASELINE_END (default 2005; try 2003, 2007)
-  - LEAD_YEARS (default 5; try 4, 6)
-  - WATCH_PCTL (default 0.80; try 0.75, 0.85)
-  - WARNING_PCTL (default 0.95; try 0.93, 0.97)
-  - ALERT_PCTL (default 0.98; try 0.97, 0.99)
-
-we rerun Stage 5 holding all other hyperparameters at default and report
-OOS AUC, OOS AUC-PR, LOEO sensitivity, and detection counts.
-
-A robust model should show <0.02 AUC swing across ±1-2 step changes in each
-parameter. Larger swings indicate the headline result depends on the specific
-hyperparameter choice — a red flag.
-
-Output: robustness/hyperparameter_sensitivity.csv with one row per sweep point.
-Run time: ~5 min per config × 18 configs = ~90 min on Brev.
-"""
-
 import os
 import subprocess
 import re

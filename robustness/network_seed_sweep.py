@@ -1,11 +1,3 @@
-"""
-Refits the Stage 4 INE-TARNet across N random seeds and reports the
-distribution of the learned convex network weights (alpha_contig,
-alpha_alliance, alpha_trade, alpha_cultural). Used to assess whether the
-near-uniform weights reported in the paper are data-driven or
-initialization-driven.
-"""
-
 import argparse
 import os
 import sys

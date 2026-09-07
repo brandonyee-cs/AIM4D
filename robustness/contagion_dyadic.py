@@ -1,25 +1,3 @@
-"""Within-bloc, size-matched dyadic test for the cultural diffusion channel.
-
-The near-vs-far pool decomposition (contagion_blocsplit.py) is confounded by pool
-composition: the "far" pool is every non-bloc country (~135 of them), a large and
-heterogeneous set that tracks the global autocratization wave more tightly than a
-handful of cultural neighbours simply by aggregation, regardless of any cultural
-mechanism. A larger, more diverse pool co-moves with the common wave by
-construction, so near < far tells us nothing about culture.
-
-We remove that confound with a matched dyadic design (Neumayer & Plumper 2010 on
-directed-dyad spatial lags; Franzese & Hays 2007 on the spatial-lag / Galton
-correction; Beck, Gleditsch & Beardsley 2006 on non-geographic connectivity). For
-each receiver country we draw a far pool that is (i) the SAME SIZE as its set of
-cultural partners and (ii) restricted to the receiver's own political region, so
-near and far are drawn from comparable pools. We then regress own change on the
-near-partner spatial lag, the matched far-partner lag, and a leave-one-out global
-precedent term (the common-wave control is complementary to, not a substitute for,
-the matching). The cultural channel is credible as a relative claim only if the
-near lag transmits more than the size-matched far lag, averaged over many random
-matched draws. Region fixed effects and regime-state controls are retained.
-"""
-
 import os
 import sys
 import warnings

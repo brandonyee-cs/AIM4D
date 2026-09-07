@@ -1,25 +1,3 @@
-"""
-Tuning sweep: test each Stage 5 tuning knob in isolation.
-
-Five configurations, each one re-runs Stage 5 only (upstream unchanged)
-and captures OOS AUC, OOS AUC-PR, LOEO sensitivity, and DSP ablation Δ.
-
-  baseline       — no improvements (defaults: coup-lead=5, pos-weight=1, smooth=1)
-  coup_lead_3    — coup pre-onset window = 3 yrs (backsliding still 5)
-  pos_weight_3   — positive labels weighted 3x in GB training
-  smooth_3       — rolling 3-year max of risk score before tier assignment
-  all_three      — all three together (the original failing combo)
-
-Each config:
-  1. Sets env vars (AIM4D_COUP_LEAD / AIM4D_POS_WEIGHT / AIM4D_SMOOTH)
-  2. Runs stage5_ews/estimate.py
-  3. Parses key metrics from stdout
-  4. Runs robustness/dsp_ablation.py with the resulting ews_signals.csv
-  5. Records a row in robustness/tuning_sweep.csv
-
-Total runtime: ~25-35 min (5 configs x ~5 min/config).
-"""
-
 import os
 import re
 import subprocess

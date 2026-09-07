@@ -1,17 +1,3 @@
-"""
-Robustness check: feature selection (elastic-net) vs all features.
-
-The Stage 5 default uses all features. Reviewers may ask: does the model still
-work with explicit feature selection? The all-features row is scored from the
-canonical Stage 5 outputs; the pruned configuration reruns Stage 5 with
-AIM4D_USE_ENET=1 inside an isolated git worktree so the canonical outputs are
-never touched. Metrics are computed directly from each run's artifacts on the
-strict 2019 protocol rather than parsed from logs. Stage 5 also persists the
-elastic-net diagnostic coefficients to stage5_ews/enet_coefficients.csv.
-
-Output: robustness/elastic_net_robustness.csv comparing the two configurations.
-"""
-
 import os
 import subprocess
 import sys

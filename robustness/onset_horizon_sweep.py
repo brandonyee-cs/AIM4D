@@ -1,21 +1,3 @@
-"""
-Horizon sweep with the ensemble aggregation chosen inside the training window.
-
-Two gaps in onset_forecast_optimized.py are closed here. That script reported
-five aggregations and the best one was picked after seeing test scores, which
-biases the headline by roughly the spread among them; here the aggregation is
-selected at each origin by the same blocked inner validation used for
-hyperparameters, so the reported figure is pre-specified in the only sense that
-matters. And it fixed h=5, whereas the horizon is an empirical question: a
-signal that leads onset by a year need not lead it by five.
-
-Protocol is otherwise unchanged. At-risk pool is democratic country-years not
-already inside an episode, the target is onset during t+1..t+h, all predictors
-are dated t or earlier, and forecasts roll across origins.
-
-Outputs robustness/onset_horizon_sweep.csv.
-"""
-
 import os
 import sys
 import warnings
@@ -64,7 +46,6 @@ def combine(pm, agg, groups=None):
 
 
 def select_agg(tr, feats, h):
-    """Choose the aggregation on held-out blocks strictly inside training."""
     yrs = np.sort(tr.year.unique())
     if len(yrs) < 14:
         return "mean"

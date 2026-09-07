@@ -1,9 +1,3 @@
-"""
-Fallback feature builder: derives event-style country-year features from V-Dem
-indicators (protest/violence/repression). Used only when real GDELT is not
-present at data/gdelt_country_year.csv. Run data/download_gdelt.py first for
-the actual GDELT 1.0 events.
-"""
 import os
 import pandas as pd
 import numpy as np

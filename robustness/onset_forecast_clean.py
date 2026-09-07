@@ -1,29 +1,3 @@
-"""
-Onset forecasting on a clean risk set, with rolling origins and clustered inference.
-
-This addresses three referee objections at once.
-
-Risk set (objection 1). The primary target is onset among countries that are
-democratic and not already inside an episode. Following the two-stage logic of
-Boese et al. (2021), the at-risk pool at time t is country-years with V-Dem
-Regimes of the World >= 2 (electoral or liberal democracy) and no ongoing
-autocratization episode. Episodes beginning from an autocracy are a different
-outcome (ERT's "regressed autocracy") and are excluded from the onset target
-rather than pooled into it.
-
-Information set (objection 2). Y_it^(h) = 1 if a country at risk at t
-experiences an onset during t+1..t+h. Every predictor is dated t or earlier, so
-the design is genuinely h-step-ahead rather than contemporaneous. Forecasts roll:
-at origin T the model trains only on rows whose full h-year label window closed
-at or before T, then scores the rows dated T.
-
-Uncertainty (objection 5). Ablation differences are reported as paired
-country-clustered bootstrap intervals on the same scored rows, across several
-learners and seeds, rather than as a single number from one common fit.
-
-Outputs robustness/onset_forecast_clean.csv and onset_ablation_ci.csv.
-"""
-
 import os
 import sys
 import warnings
@@ -42,10 +16,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 OUT = os.path.dirname(os.path.abspath(__file__))
 HORIZONS = [2, 5]
 LAST_OBS = 2025
-# An origin is admissible only when its whole outcome window falls inside the
-# observed panel. With onsets observed through 2025 a later origin would score
-# rows against onsets that cannot yet have been recorded, counting them as
-# non-events. Origins are therefore horizon-specific.
 ORIGINS = list(range(2005, LAST_OBS + 1))
 
 
@@ -62,10 +32,6 @@ EXCLUDE_COLS = {
     "combined_alert", "combined_alert_legacy", "ews_alert", "raw_alert",
     "election_alert", "dem_vulnerability_alert", "military_threat_alert",
     "mv_csd_alert", "n_factors", "is_postonset",
-    # Episode bookkeeping. These describe the outcome and must never reach a
-    # model: onset_year and peak_year are non-null only for countries that have
-    # an episode, and their values say when it happened. Leaving peak_year out
-    # of this set once raised the elastic-net AUC from 0.64 to 0.85.
     "onset_year", "peak_year", "ep_end", "in_episode", "at_risk",
 }
 
@@ -92,11 +58,6 @@ def build_panel():
     d["onset_year"] = d["country_name"].map(onset)
     d["peak_year"] = d["country_name"].map(peak)
 
-    # An episode runs from its onset to its peak. Treating a country as
-    # permanently in-episode after any onset removes exactly the units most
-    # exposed to a second one: Venezuela's 2002 onset would exclude it for the
-    # following 23 years. Membership therefore ends at the peak, after which a
-    # country that is still coded a democracy re-enters the at-risk pool.
     span = (d["onset_year"].notna()
             & (d["year"] >= d["onset_year"])
             & (d["year"] <= d["peak_year"]))

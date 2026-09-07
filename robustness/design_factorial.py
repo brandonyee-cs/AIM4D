@@ -1,21 +1,3 @@
-"""
-Which part of the evaluation design does the work.
-
-The strict and conventional numbers differ in more than one respect at once, so
-a reader cannot tell whether the fall in discrimination comes from the risk set,
-the label timing, the origin structure, or the requirement that training outcome
-windows close before the forecast is issued. This holds the feature matrix and
-the learners fixed and varies the four design choices factorially, so each cell
-differs from its neighbours in exactly one respect.
-
-    risk    all country-years            vs at-risk democracies not in episode
-    label   window including t (W_it)    vs onset strictly in t+1..t+h
-    origin  single 2019 cutoff           vs rolling origins
-    closure training windows may overlap vs training windows must close by T
-
-Outputs robustness/design_factorial.csv.
-"""
-
 import itertools
 import os
 import sys
@@ -37,9 +19,6 @@ OUT = os.path.dirname(os.path.abspath(__file__))
 H = 5
 T0 = 2019
 LAST_OBS = 2025
-# An origin needs its whole outcome window inside the observed panel. With onsets
-# observed through 2025 and h=5, origins past 2020 would score rows against
-# outcomes that cannot yet have happened, coding them 0 by default.
 ORIGINS = list(range(2005, LAST_OBS - H + 1))
 SEEDS = [0, 1, 2]
 
@@ -54,17 +33,12 @@ def score(d, feats, name, seed, restrict, future_only, rolling, closure):
     d = d.copy()
     d["y"] = label(d, future_only)
     pool = d[d.at_risk] if restrict else d
-    # Without closure the training window may still be open, but it must not
-    # contain the rows being scored. Under rolling origins that means stopping
-    # at T-1; under a fixed origin the test set is already disjoint at T+1.
     lag = H if closure else (1 if rolling else 0)
     origins = ORIGINS if rolling else [T0]
     ys, ps = [], []
     for T in origins:
         tr = pool[pool.year <= T - lag]
         te = pool[pool.year == T] if rolling else pool[pool.year > T]
-        # Scored rows also need a closed outcome window, or a censored row is
-        # counted as a negative.
         te = te[te.year <= LAST_OBS - H]
         if len(te) == 0 or tr["y"].sum() < 5 or te["y"].sum() < 1:
             continue

@@ -1,22 +1,3 @@
-"""
-Network definition robustness (contiguity-only, alliance-only, trade-only, KNN).
-
-Tests whether the contagion decomposition and downstream predictions are
-sensitive to the choice of spatial weight matrix W.
-
-Methodological basis:
-  - LeSage & Pace (2009): sensitivity to W in spatial econometrics
-  - Neumayer & Plumper (2016): W specification in political science
-  - Anselin (1988): W should be theory-driven, not data-driven
-  - Corrado & Fingleton (2012): coefficient stability across W
-
-Reports:
-  - MSE under each W definition
-  - Spearman rank correlation of country contagion scores across W
-  - Top contagion countries under each W
-  - Network ablation improvement under each W
-"""
-
 import sys
 import os
 import warnings
@@ -41,10 +22,6 @@ OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def build_graph_single_edge_type(df, countries_iso3, years, contig_pairs,
                                   alliance_by_year, feature_cols, edge_type):
-    """
-    Build spatio-temporal graph using only one edge type.
-    edge_type: 'contiguity', 'alliance', 'trade', 'knn5', or 'full'
-    """
     N = len(countries_iso3)
     T = len(years)
     total_nodes = N * T
@@ -139,7 +116,6 @@ def build_graph_single_edge_type(df, countries_iso3, years, contig_pairs,
 
 
 def compute_contagion_scores(model, x, y, edge_index, spatial_ei, node_country, node_year):
-    """Compute per-country contagion scores."""
     model.eval()
     with torch.no_grad():
         full_ei = torch.cat([spatial_ei, torch.zeros(2, 0, dtype=torch.long)], dim=1) if spatial_ei.shape[1] > 0 else spatial_ei

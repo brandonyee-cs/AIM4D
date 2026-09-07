@@ -1,13 +1,4 @@
 #!/usr/bin/env bash
-# Smoke-test every robustness script with AIM4D_QUICK=1.
-# Verifies each script runs end-to-end and writes its expected output CSV.
-# Each script gets a timeout; failures are reported but don't abort the run.
-#
-# Usage:
-#   bash robustness/smoke_test.sh           # runs all
-#   bash robustness/smoke_test.sh fast      # skip the GNN counterfactual
-#
-# Expected total runtime: ~10-15 min with AIM4D_QUICK=1.
 
 set -u
 cd "$(dirname "$0")/.." || exit 1
@@ -45,43 +36,36 @@ run_one() {
     fi
 }
 
-# 1. lead_time_auc — fast, reads existing ews_signals.csv
 run_one "lead_time_auc" \
     "python3 -u robustness/lead_time_auc.py" \
     120 \
     "robustness/lead_time_auc.csv"
 
-# 2. alternate_labels — fast, reads existing ews_signals.csv + V-Dem
 run_one "alternate_labels" \
     "python3 -u robustness/alternate_labels.py" \
     180 \
     "robustness/alternate_labels.csv"
 
-# 3. permutation_importance_oos — refits ensemble, ~3-5 min in QUICK mode
 run_one "permutation_importance_oos" \
     "python3 -u robustness/permutation_importance_oos.py" \
     600 \
     "robustness/permutation_importance_oos.csv"
 
-# 4. elastic_net_robustness — 2 Stage 5 reruns in QUICK mode
 run_one "elastic_net_robustness" \
     "python3 -u robustness/elastic_net_robustness.py" \
     600 \
     "robustness/elastic_net_robustness.csv"
 
-# 5. dsp_imputation_robustness — 2 Stage 5 reruns in QUICK mode
 run_one "dsp_imputation_robustness" \
     "python3 -u robustness/dsp_imputation_robustness.py" \
     600 \
     "robustness/dsp_imputation_robustness.csv"
 
-# 6. hyperparameter_sensitivity — 13 Stage 5 reruns; QUICK mode keeps it tractable
 run_one "hyperparameter_sensitivity" \
     "python3 -u robustness/hyperparameter_sensitivity.py" \
     1800 \
     "robustness/hyperparameter_sensitivity.csv"
 
-# 7. gnn_counterfactual — refits Stage 4 once; skipped in 'fast' mode
 if [ "$SKIP_GNN" != "fast" ]; then
     run_one "gnn_counterfactual" \
         "python3 -u robustness/gnn_counterfactual.py" \
@@ -91,17 +75,11 @@ else
     echo "Skipping gnn_counterfactual (fast mode)"
 fi
 
-# 8. Task F sample (heavy) — verify 1 episode runs without crash.
-# IMPORTANT: this rewrites the upstream stage1/2/3/4 CSVs with
-# Venezuela-excluded + QUICK-mode versions. Restore canonical state after.
 run_one "sample_pipeline_loeo_smoke" \
     "AIM4D_SMOKE_LIMIT=1 python3 -u robustness/sample_pipeline_loeo.py" \
     1800 \
     ""
 
-# 9. Restore canonical pipeline state — must rerun stages 1-4 without
-# AIM4D_QUICK and without AIM4D_EXCLUDE_COUNTRY so downstream analyses
-# don't read contaminated CSVs.
 echo
 echo "=== Restoring canonical pipeline state after Task F smoke run ==="
 unset AIM4D_QUICK AIM4D_HMM_RESTARTS AIM4D_EXCLUDE_COUNTRY

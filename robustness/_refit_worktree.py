@@ -1,16 +1,3 @@
-"""Shared helpers for running full-pipeline refits concurrently.
-
-Each refit runs inside its own detached git worktree with data/ symlinked
-from the canonical checkout, so concurrent folds/episodes cannot clobber
-each other's stage outputs or the canonical checkout's. BLAS/ensemble
-thread caps are exported into every stage subprocess; workers are plain
-threads driving subprocesses, and results are collected in submission
-order by the callers.
-
-Worktrees materialize HEAD, so uncommitted changes to pipeline code are
-invisible to refits; warn_if_dirty() surfaces that before a run.
-"""
-
 import os
 import re
 import shutil

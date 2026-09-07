@@ -1,27 +1,3 @@
-"""
-Fix calibration and put the alert tiers on a defensible operating point.
-
-Two problems motivate this. The deployed risk scores have a calibration slope
-near 3.4, meaning they are badly under-dispersed and cannot be read as
-probabilities. And the alert tiers are percentiles of a training-negative
-distribution, which fixes the false-alarm rate by construction and leaves the
-watchlist burden unstated and uncontrolled.
-
-Both have standard fixes. Calibration is repaired prequentially: at each
-forecast origin the recalibration map is fitted only on predictions from
-strictly earlier origins, so the corrected scores remain honestly out of
-sample (Platt 1999; Zadrozny and Elkan 2002; Niculescu-Mizil and Caruana 2005;
-Kull, Silva Filho and Flach 2017). Operating points are then set by a stated
-annual alert budget rather than by a training percentile, and reported with
-precision, recall and lift over the base rate, which is what an analyst acting
-on a watchlist actually needs (Saito and Rehmsmeier 2015).
-
-Runs on the clean at-risk panel: democratic country-years not already inside an
-episode, with every predictor dated t or earlier and onset scored over t+1..t+h.
-
-Outputs robustness/recalibration.csv and robustness/operating_points.csv.
-"""
-
 import os
 import sys
 import warnings

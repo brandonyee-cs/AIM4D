@@ -1,12 +1,3 @@
-"""
-Bootstrap 95% confidence intervals for the paper's headline metrics.
-
-Loads stage5_ews/ews_signals.csv (must have combined_risk + label populated)
-and V-Dem v16 for the FH/Polity outcome cross-checks. Resamples 1,000x with
-replacement; reports point estimate and percentile [2.5, 97.5] CI.
-Outputs robustness/bootstrap_cis.csv.
-"""
-
 import os
 import sys
 import warnings
@@ -34,10 +25,6 @@ def _percentile_ci(arr, alpha=0.05):
 
 
 def _bca_ci(arr, theta_hat, jack_stats, alpha=0.05):
-    """
-    Bias-corrected and accelerated (BCa) interval (Efron 1987).
-    Falls back to percentile if BCa edge-cases hit (degenerate z0 or a).
-    """
     from scipy.stats import norm
     arr = np.asarray(arr)
     p_below = float(np.mean(arr < theta_hat))
@@ -67,14 +54,6 @@ def _bca_ci(arr, theta_hat, jack_stats, alpha=0.05):
 
 
 def bootstrap_auc(y, s, fn=roc_auc_score, n_boot=N_BOOT, clusters=None, method="bca"):
-    """
-    Bootstrap CI. With `clusters`, uses pairs cluster bootstrap (Cameron-Miller
-    2015). With method="bca" (default), uses bias-corrected and accelerated
-    intervals (Efron 1987) — typically 10-30% tighter than percentile at small N.
-    method="percentile" gives the older simple percentile interval.
-
-    Returns (theta_hat_on_full_data, ci_low, ci_high).
-    """
     y = np.asarray(y)
     s = np.asarray(s)
 

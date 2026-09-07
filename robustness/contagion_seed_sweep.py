@@ -1,17 +1,3 @@
-"""
-Contagion decomposition seed sweep.
-
-Retrains the Stage 4 INE-TARNet across N random seeds and captures, for each
-seed, the 2025 contagion share for a fixed set of focus countries (Hungary,
-Türkiye, Poland, USA, Denmark, Ukraine, Serbia, Tunisia, Brazil, Argentina).
-Writes mean ± std across seeds so the paper's case-study percentages (e.g.,
-Hungary 68%, Türkiye 71% domestic) can be reported with a stability range.
-
-Outputs:
-  robustness/contagion_seed_sweep.csv          per-seed per-country contagion
-  robustness/contagion_seed_sweep_summary.csv  mean / std / min / max
-"""
-
 import argparse
 import os
 import sys

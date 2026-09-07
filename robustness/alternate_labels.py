@@ -1,20 +1,3 @@
-"""
-Alternate-label robustness: evaluate the model's risk scores against
-non-V-Dem definitions of democratic decline.
-
-V-Dem is the field-standard but reviewers will ask: does the model predict
-*democratic decline* or just *V-Dem's coding choices*? We evaluate the same
-calibrated_risk scores against:
-
-  - Freedom House (e_fh_pr): 3yr / 5yr declines at 2pt and 3pt thresholds
-  - Polity-VI (e_polity2): 3yr / 5yr declines at 2pt and 3pt thresholds
-
-Output: robustness/alternate_labels.csv — one row per (source, window, threshold).
-
-The script reuses the bootstrap_auc helper from bootstrap_cis.py to put
-country-cluster 95% CIs on every comparison.
-"""
-
 import os
 import sys
 import numpy as np
@@ -32,7 +15,6 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "alternate_labels
 
 
 def build_decline_labels(vdem_path, col, source_name, windows=(3, 5), thresholds=(2, 3)):
-    """Build decline labels at multiple window/threshold combos."""
     df = pd.read_csv(vdem_path, usecols=["country_text_id", "year", col], low_memory=False).dropna()
     df[col] = df[col].astype(float)
     df = df.sort_values(["country_text_id", "year"]).reset_index(drop=True)

@@ -1,15 +1,3 @@
-"""
-Ensemble contagion scores across W definitions.
-
-Performance-weighted average of contagion scores from contiguity, alliance,
-trade, and full network models. Reports bounds for key country findings.
-
-Methodological basis:
-  - LeSage & Pace (2014): BMA over spatial weight matrices
-  - Neumayer & Plumper (2016): theoretically motivated W
-  - Wolpert (1992): stacked generalization
-"""
-
 import sys
 import os
 import numpy as np
@@ -28,7 +16,6 @@ PERFORMANCE_WEIGHTS = {
 
 
 def load_variant_scores():
-    """Load contagion scores from each W variant if available, else use main."""
     base = os.path.dirname(os.path.abspath(__file__))
     main_path = os.path.join(base, "..", "stage4_nscm", "contagion_scores.csv")
 
@@ -37,7 +24,6 @@ def load_variant_scores():
 
 
 def compute_ensemble(scores_dict, weights=None):
-    """Compute performance-weighted ensemble of contagion scores."""
     if weights is None:
         total = sum(PERFORMANCE_WEIGHTS.values())
         weights = {k: v / total for k, v in PERFORMANCE_WEIGHTS.items()}

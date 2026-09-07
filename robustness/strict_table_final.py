@@ -1,18 +1,3 @@
-"""
-Final strict-design comparison table.
-
-Three things this fixes relative to baselines_clean_design.py. Origins are
-restricted to those whose outcome window closes inside the observed panel, so
-no row is scored against an outcome that cannot yet have happened; with onsets
-observed through 2025 that means origins through 2025-h. Every model is scored
-on the same rows, taken as the intersection across models, so the columns are
-comparable. And discrimination is reported with average precision and
-precision-at-the-top alongside AUC, since at an 8 percent base rate ranking
-alone does not describe how a watchlist would perform.
-
-Outputs robustness/strict_table_final.csv.
-"""
-
 import os
 import sys
 import warnings
@@ -91,7 +76,6 @@ def metrics(df):
 
 
 def model_ci(y, p, countries):
-    """Country-clustered percentile bootstrap CI for one model's AUC and AP."""
     uniq = np.unique(countries)
     idx = {c: np.where(countries == c)[0] for c in uniq}
     a, b = [], []
@@ -144,12 +128,8 @@ def main():
     preds["Random-forest ensemble"] = rolling(d, allf, lambda: RandomForestClassifier(
         n_estimators=400, min_samples_leaf=3, class_weight="balanced", random_state=0, n_jobs=-1))
 
-    # framework: rank-mean blend of the three learner families on the framework features
     parts = [preds[k] for k in ["Elastic net, all features", "Gradient boosting, all features",
                                 "Random-forest ensemble"] if len(preds[k])]
-    # Ranks are formed within each origin's eligible set. Ranking over the pooled
-    # rows would let an early origin's blended score depend on predictions made at
-    # later origins, which a forecaster at that origin could not have known.
     key = ["country_name", "year", "y"]
     blend = parts[0][key].copy()
     acc = np.zeros(len(blend))

@@ -135,11 +135,6 @@ def quantile_init(X_all, n_states=N_STATES):
 
 
 def transmat_alpha(n_states=N_STATES):
-    """
-    Asymmetric Dirichlet alpha matrix for the transition prior (Svolik 2008,
-    Epstein et al. 2006). Passed to hmmlearn's `transmat_prior` so the prior
-    actually constrains EM, not just the final transmat.
-    """
     diag_priors = {
         0: 500,
         1: 200,
@@ -157,7 +152,6 @@ def transmat_alpha(n_states=N_STATES):
 
 
 def regularize_transmat(P, n_states=N_STATES):
-    """Post-hoc smoothing of fitted transmat with the same Dirichlet prior."""
     alpha = transmat_alpha(n_states)
     counts = P * 100
     smoothed = counts + alpha
@@ -392,13 +386,6 @@ DURATION_PARAMS = {
 
 
 def stabilize_states(states, posteriors):
-    """
-    Posterior threshold + duration-dependent stabilization.
-    Requires supermajority posterior (0.65+) to reclassify, with the
-    threshold increasing for long-duration states (Svolik 2008).
-    Eliminates boundary oscillations (Canada, Portugal, South Korea)
-    while preserving genuine transitions (Hungary 2010).
-    """
     T = len(states)
     stabilized = states.copy()
     duration = 1

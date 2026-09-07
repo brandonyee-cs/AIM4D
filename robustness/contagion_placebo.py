@@ -1,21 +1,3 @@
-"""Additional identification checks for the spatial-diffusion / contagion channel,
-on top of causal_real_data.py (which already runs the level-FE artifact, the
-change-spec +/- year FE contrast, 2SLS, and a node-permutation placebo).
-
-  temporal_placebo : the spatial-lag coefficient should be ~null in the pre-wave
-                     period and significant in the backsliding era (Egami 2024
-                     structural-stationarity logic).
-  slx_predetermined: dY on neighbors' PREDETERMINED lagged level (W*y_{t-1}),
-                     which is IV-free and avoids the simultaneity of W*dY
-                     (Halleck-Vega & Elhorst SLX).
-  common_shock     : alpha on W*dY survives controlling for the global mean change
-                     (a common-shock proxy weaker than full year FE).
-  first_stage_F    : the weak-IV first-stage F for the 2SLS instrument W*y_{t-1}
-                     (transparency on why we frame as predictive, not causal).
-
-Reuses build_W and the factor/state inputs from causal_real_data.
-"""
-
 import os
 import sys
 import warnings

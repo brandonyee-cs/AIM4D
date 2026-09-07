@@ -1,15 +1,3 @@
-"""
-Seed stability of the total-variation network measure.
-
-The published logit-ratio index was reported across ten Stage 4 seeds in an
-appendix. That index is discarded, so its stability table no longer describes
-any quantity the paper uses. This retrains Stage 4 across seeds and records the
-total variation and signed direction instead, which is what the revised network
-section reports.
-
-Outputs robustness/netdep_tv_seed_sweep.csv and its summary.
-"""
-
 import argparse
 import os
 import sys
@@ -34,9 +22,6 @@ K = 5
 def _one(s, x, y, edge_index, full_ei, mask_train, mask_test, in_dim,
          node_country, node_year, name_map, target_year):
     torch.set_num_threads(max(1, int(os.environ.get("AIM4D_SWEEP_THREADS", "1"))))
-    # Same selection protocol as the canonical fit. Passing mask_test alone
-    # would select weights on the rows the canonical run holds out, so seed
-    # differences would confound initialization with protocol.
     mask_val, mask_eval = split_val_test(mask_test, node_year)
     model = train_model(x, y, edge_index, mask_train, mask_eval, in_dim, seed=s,
                         mask_val=mask_val)
@@ -44,8 +29,6 @@ def _one(s, x, y, edge_index, full_ei, mask_train, mask_test, in_dim,
     with torch.no_grad():
         h_full, h_ego = model.encode(x, full_ei)
         Pf = F.softmax(model.outcome_logits(h_full), dim=-1).numpy()
-        # Comparator fed the own-country block alone. The ego head is not usable
-        # here: it drops message passing but keeps the weighted spatial lags.
         Pl = model.domestic_only(x).numpy()
 
     tv = 0.5 * np.abs(Pf - Pl).sum(axis=1)

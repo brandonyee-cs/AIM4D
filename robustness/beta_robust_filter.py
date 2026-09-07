@@ -1,29 +1,3 @@
-"""Robustness check for the time-varying democratic beta: a Student-t observation
-filter as a principled alternative to upper-tail winsorization.
-
-The transient beta spikes (e.g. Hungary +14 in 1989) arise because the Gaussian
-state-space MLE places the state-innovation variance at its upper boundary during
-the synchronized 1989-1992 transitions, so the filtered loading behaves as a near
-random walk and tracks the instantaneous ratio of a country's idiosyncratic move
-to a small contemporaneous global change (Stock & Watson 1998; Harvey & Luati
-2014). A symmetric remedy (tightening the state variance, or shrinking the beta
-toward a constant) suppresses the spurious positive transition spike but also
-reverses the substantively meaningful negative onset signal, because both come
-from the same mechanism.
-
-A Student-t observation density is the natural principled candidate, but it does
-NOT rescue the asymmetry. Estimated by MLE, the heavy-tailed filter drives the
-state-innovation variance to its LOWER boundary and flattens Hungary's Factor-1
-loading to a near constant (~+0.6 throughout), erasing not just the 1989 spike but
-the substantively meaningful 2009-2011 negative onset as well. This script
-documents both failed alternatives, tightening the Gaussian state variance (which
-flips the 2010 sign) and the Student-t filter (which flattens the series), and is
-the evidence that no symmetric or robust estimator separates the spurious positive
-transition spike from the genuine negative onset, because the two are statistically
-identical. The directional upper-tail winsorization used in the main text is
-therefore justified on substantive, not statistical, grounds.
-"""
-
 import os
 import sys
 import warnings
@@ -44,13 +18,6 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "beta_robust_filt
 
 
 def robust_t_kalman(y, x, q_var, r_var, nu=NU):
-    """Kalman TVP filter+smoother with a Student-t observation density.
-
-    The observation precision is scaled per step by the Student-t score weight
-    w_t = (nu+1)/(nu + v_t^2/F_t), which is < 1 for outlier innovations, so a lone
-    large shock inflates the observation noise rather than the state (Harvey &
-    Luati 2014; Creal, Koopman & Lucas 2013).
-    """
     T = len(y)
     valid = min(10, T)
     xi, yi = x[:valid], y[:valid]
@@ -127,9 +94,6 @@ def gaussian_kalman_beta(y, x, n_train):
 
 
 def tightened_q_demo(df):
-    """Falsification of the symmetric remedy: tightening the Kalman state-variance
-    upper bound suppresses the +1989 spike but flips the sign of the 2010 onset.
-    """
     hun = df[df["country_name"] == "Hungary"].sort_values("year")
     yrs = hun["year"].values
     gf = compute_loo_global(df, "Hungary").loc[yrs].values

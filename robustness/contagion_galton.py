@@ -1,18 +1,3 @@
-"""Galton's-problem defense for the cultural-bloc diffusion finding.
-
-The objection (and Schmotz-Selvik 2025's central method): a cultural-bloc spatial
-lag may pick up shared heritage rather than transmission, and regional/neighbour
-effects often vanish once GLOBAL precedent is controlled. We therefore run a
-horse race. We re-estimate the recent-era (post-2005) diffusion model adding, as
-mutual controls, (i) a geographic/border spatial lag (COW direct land contiguity),
-(ii) a leave-one-out global-precedent term (the mean change among all other
-countries that year, Schmotz-Selvik's dominant channel), and (iii) region fixed
-effects (a proxy for shared structural/colonial/linguistic heritage). The cultural
-diffusion association is credible only if its coefficient survives this competition.
-If it dies once global precedent enters, the honest conclusion is that the signal
-is global, not cultural, and the finding should be demoted.
-"""
-
 import os
 import sys
 import warnings

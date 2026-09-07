@@ -1,15 +1,3 @@
-"""V-Dem measurement-uncertainty robustness (circularity / coding-artifact defense).
-
-The Little-Meng critique is that expert-coded V-Dem signal could be a coding
-artifact. V-Dem ships per-estimate measurement uncertainty (the _sd columns from
-its Bayesian IRT model). We draw the raw V-Dem inputs from N(value, sd), refit the
-Stage-5 forecaster, and check that the out-of-sample AUC and the mobilization >
-digital-control ranking are stable across measurement-uncertainty draws. Stability
-means the result reflects signal, not coding noise. (Scope: perturbs the raw V-Dem
-features the meta-learner consumes directly; the derived channels are held fixed,
-so this is a conservative lower bound on robustness.)
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",

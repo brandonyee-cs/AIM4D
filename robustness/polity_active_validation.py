@@ -1,23 +1,3 @@
-"""
-Polity-active subset validation.
-
-The full-sample Polity cross-validation (robustness/polity_validation.py)
-returns AUC ~0.53 — the paper's defense is that Polity is too coarse to see
-gradual erosion (e.g., Hungary stays at Polity 10 throughout 2010-2018).
-This script tests that defense empirically. It restricts the validation to
-country-years where Polity is *responsive* (its score has actually moved)
-and asks: when Polity does record movement, does the AIM4D risk score
-predict its declines?
-
-Two operationalizations of "Polity-active":
-  (1) Country-level: countries with any Polity variance over their history.
-  (2) Country-year level: country-years preceded by Polity movement in the
-      past 10 years (purely backward-looking).
-
-Outputs robustness/polity_active_validation.csv and prints AUCs with
-1,000-replicate bootstrap CIs.
-"""
-
 import os
 import sys
 import warnings

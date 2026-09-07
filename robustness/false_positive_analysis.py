@@ -1,24 +1,3 @@
-"""
-False positive classification and analysis.
-
-Classifies every false positive alert as:
-  1. Temporal near-miss: episode occurred within 3 years after the alert window
-  2. Near-miss: country experienced polyarchy decline (>0.05) but no formal episode
-  3. True false positive: no deterioration
-
-Methodological basis:
-  - Hegre et al. (2019, ViEWS): FP discussion in conflict forecasting
-  - Ward & Beger (2017): near-misses as useful predictions
-  - Cederman & Weidmann (2017): recall vs precision tradeoff for policy
-  - Greenhill, Ward & Sacks (2011, AJPS): separation plots for rare events
-
-Reports:
-  - Full FP table with classification, polyarchy change, risk score
-  - Breakdown by FP type
-  - Stable democracy false alarm rate
-  - Regional distribution of FPs
-"""
-
 import sys
 import os
 import numpy as np
@@ -40,7 +19,6 @@ STABLE_DEMOCRACIES = [
 
 
 def load_data():
-    """Load EWS signals and V-Dem polyarchy data."""
     vdem_path = os.path.join(os.path.dirname(__file__), "..", "data", "vdem_v16.csv")
 
     try:
@@ -61,7 +39,6 @@ def load_data():
 
 
 def identify_fps(ews, vdem):
-    """Identify all false positive alerts and classify them."""
     known_w = {}
     for c, info in KNOWN_EPISODES.items():
         for y in range(info["onset"] - LEAD_YEARS, info["onset"] + 1):

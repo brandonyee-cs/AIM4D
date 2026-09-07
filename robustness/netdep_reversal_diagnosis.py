@@ -1,27 +1,3 @@
-"""
-Why the network ranking reverses, decomposed per country.
-
-The published index is A / (A + B) with A the L1 norm of the logit spillover and
-B the L1 norm of the domestic logit vector. Only A is stored, but B is
-recoverable exactly as B = A (1 - index) / index, so the index can be split into
-the movement it measures and the scale it divides by. That split is the whole
-question: a country can score high because its prediction genuinely moves a lot,
-or merely because its domestic logits happen to sit near zero.
-
-The scale term is the one with no defensible interpretation. Softmax is
-invariant to adding a constant to every logit, so B can be made arbitrarily
-large or small without altering a single predicted probability. Any ranking
-driven by B is a ranking of an arbitrary representation.
-
-This reports, per country: the movement term, the scale term, their ratio, the
-published index, the total-variation index computed on recovered probabilities,
-and the signed direction along the regime ordering. It also reports which regime
-states the probability mass moves between, which is what "network dependence"
-should mean substantively.
-
-Outputs robustness/netdep_reversal_diagnosis.csv.
-"""
-
 import os
 import sys
 

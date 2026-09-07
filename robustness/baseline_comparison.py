@@ -1,23 +1,3 @@
-"""
-Baseline comparison + LOCO ablation study (restructured).
-
-Two tables following ML pipeline best practices:
-
-Table 1: External baselines (logistic, XGBoost, RF on raw V-Dem)
-  Answers: "Does AIM4D outperform simpler approaches?"
-
-Table 2: LOCO ablation (keep meta-learner constant, ablate inputs)
-  Answers: "What does each pipeline stage contribute?"
-  Standard: Hamilton et al. (2017 GraphSAGE), Kipf & Welling (2017 GCN)
-
-Methodological basis:
-  - Goldstone et al. (2010, AJPS): parsimonious logistic benchmark
-  - Ward, Greenhill & Bakke (2010): OOS prediction standard
-  - Montgomery, Hollenbach & Ward (2012): ensemble methods for instability
-  - Muchlinski et al. (2016): ML vs logistic for rare events
-  - Stock & Watson (2002): factor extraction justification
-"""
-
 import sys
 import os
 import warnings
@@ -52,7 +32,6 @@ def build_labels(df):
 
 
 def load_all_data():
-    """Load and merge all pipeline stage outputs into a single panel."""
     base = os.path.join(os.path.dirname(__file__), "..")
 
     vdem_path = os.path.join(base, "data", "vdem_v16.csv")
@@ -129,7 +108,6 @@ def evaluate(y_true, y_pred, name):
 
 
 def temporal_cv_auc(panel, feature_cols, label_col="label"):
-    """Expanding-window temporal CV."""
     aucs = []
     for train_end, test_end in WINDOWS:
         train = panel[(panel["year"] <= train_end) & panel[feature_cols].notna().all(axis=1)]
@@ -149,7 +127,6 @@ def temporal_cv_auc(panel, feature_cols, label_col="label"):
 
 
 def fit_and_evaluate(panel, feature_cols, name):
-    """Fit logistic on train, evaluate on all."""
     valid = panel.dropna(subset=feature_cols + ["label"])
     if valid["label"].sum() < 3:
         return {"model": name, "auc_roc": np.nan}

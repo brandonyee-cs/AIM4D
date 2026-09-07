@@ -1,24 +1,3 @@
-"""
-Task F: 15-episode full-pipeline leave-one-out validation.
-
-For each sample episode (varied across era and type), refit the entire
-pipeline with that country's data EXCLUDED from the training subsets at
-Stages 1, 3, and 5. The country still appears in the panel for prediction
-(loadings/HMM/meta-learner are applied to it after training without it).
-
-The cheap LOEO in Stage 5 only refits the meta-learner; this script bounds
-the upstream contamination by running full-pipeline LOEOs and comparing.
-
-Episodes run concurrently, each in its own detached git worktree (data/
-symlinked from the canonical checkout), so refits never touch the canonical
-stage outputs and no restore pass is needed. Concurrency defaults to a
-RAM/CPU-derived worker count; override with AIM4D_PAR.
-
-Outputs:
-  robustness/sample_pipeline_loeo.csv  — per-episode max risk, detection tier,
-    compared against the meta-only LOEO recorded in stage5_ews/loeo_results.csv
-"""
-
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -77,7 +56,6 @@ def run_episode(item):
 
 
 def collect_predictions(country, onset, repo=REPO):
-    """Read ews_signals.csv and return the country's pre-onset risk and tier."""
     ews = pd.read_csv(os.path.join(repo, "stage5_ews/ews_signals.csv"))
     pre = ews[(ews["country_name"] == country)
               & (ews["year"] >= onset - LEAD)
@@ -98,7 +76,6 @@ def collect_predictions(country, onset, repo=REPO):
 
 
 def load_meta_only_loeo():
-    """Read Stage 5's meta-only LOEO results for comparison."""
     path = os.path.join(REPO, "stage5_ews/loeo_results.csv")
     if not os.path.exists(path):
         return {}

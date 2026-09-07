@@ -1,14 +1,3 @@
-"""
-SHAP interpretability analysis for the stacked ensemble meta-learner.
-
-Computes grouped SHAP values showing each pipeline stage's contribution
-to risk predictions, addressing the "black box" concern.
-
-Methodological basis:
-  - Lundberg & Lee (2017, NeurIPS): SHAP values
-  - Covert, Lundberg & Lee (2021, AISTATS): grouped SHAP
-"""
-
 import sys
 import os
 import warnings

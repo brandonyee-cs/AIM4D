@@ -1,17 +1,3 @@
-"""Adebayo-style sanity checks (Adebayo et al. 2018) for the Stage-1 factor and
-Stage-3 regime decompositions: confirm they are genuinely data-driven, not
-artifacts that survive randomization.
-
-  Factors:  (a) input-permutation -- permute each indicator independently, refit
-                POET, show factor loadings collapse (Tucker congruence -> ~chance);
-            (b) parallel analysis -- real top-K eigenvalues vs the 95th-percentile
-                null from column-permuted data (Horn 1965).
-  Regimes:  refit a 5-state Gaussian HMM on the real factor sequences vs on
-            factor-scrambled inputs vs random-state assignment, and compare
-            agreement with V-Dem Regimes-of-the-World (weighted kappa). Real should
-            far exceed both randomized controls.
-"""
-
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
@@ -43,8 +29,6 @@ N_STATES = 5
 
 
 def fast_loadings(X, k=K):
-    """POET loadings (eigvec * sqrt(eigval), varimax-rotated) without the residual
-    covariance thresholding, which does not affect loadings."""
     cov = X.T @ X / X.shape[0]
     evals, evecs = linalg.eigh(cov)
     idx = np.argsort(evals)[::-1]
@@ -54,7 +38,6 @@ def fast_loadings(X, k=K):
 
 
 def tucker_congruence(A, B):
-    """Mean matched Tucker phi between two loading matrices (greedy, sign-invariant)."""
     used = set()
     phis = []
     for a in range(A.shape[1]):

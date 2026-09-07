@@ -1,25 +1,3 @@
-"""
-Symmetric channel ablation.
-
-Runs the DSP ablation protocol of dsp_ablation.py over three feature blocks
-rather than one, so that leave-one-block-out and block-only results are
-directly comparable on identical data, sample weights, folds and seeds:
-
-    digital control (DSP)   v2smgovdom, v2smfordom, v2smgovfilprc,
-                            v2smgovsmmon, v2smpardom and derived terms
-    mobilization            v2ca* (pro-, anti- and general mobilization)
-    latent factor dynamics  factor_*, f1_*, *_c22_*
-
-The asymmetry this addresses: dsp_ablation.py establishes that removing the
-DSP block costs little, but never tests whether removing the mobilization
-block costs any more. In a correlated 229-feature space that comparison is
-the whole content of a redundancy claim.
-
-Block sizes are unequal, so block-only scores are read alongside n_features.
-
-Outputs robustness/channel_ablation.csv.
-"""
-
 import os
 import sys
 import warnings

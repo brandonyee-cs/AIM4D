@@ -1,24 +1,3 @@
-"""
-Downloads GDELT 1.0 events for 1990-2025 and aggregates to country-year.
-
-GDELT 1.0 archive structure:
-  1979-2005: data/events/YYYY.zip            (yearly, ~37-160 MB each)
-  2006-2013-03: data/events/YYYYMM.zip       (monthly, ~10-100 MB each)
-  2013-04 onwards: data/events/YYYYMMDD.export.CSV.zip  (daily, ~5-10 MB each)
-
-Output: data/gdelt_country_year.csv with columns
-  country_code (ISO3), year, protest_count, conflict_count, repression_count,
-  total_events, avg_goldstein, avg_tone, num_mentions.
-
-CAMEO root codes used:
-  14 -> Protest
-  17 -> Coerce (govt repression)
-  18, 19, 20 -> Assault / Fight / Use Unconventional Mass Violence
-
-Resume-capable: per-file aggregates land in data/gdelt_cache/ and are skipped
-on re-run. Set GDELT_WORKERS to control parallelism (default 8).
-"""
-
 import io
 import os
 import sys

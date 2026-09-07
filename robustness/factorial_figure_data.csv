@@ -1,0 +1,11 @@
+outcome,dimension,n_pairs,mean,lo,hi,same_sign
+ledger,risk_set,24,0.0259,-0.1019,0.1284,0
+ledger,label,24,-0.0138,-0.0599,0.0065,0
+ledger,origin,24,-0.0081,-0.1127,0.1657,0
+ledger,closure,24,-0.2306,-0.3017,-0.1242,1
+ert,risk_set,24,0.0242,-0.0567,0.0715,0
+ert,label,24,-0.0038,-0.0331,0.0326,0
+ert,origin,24,-0.0836,-0.208,0.0643,0
+ert,closure,24,-0.1419,-0.2092,-0.0099,1
+placebo,closure_permuted,50,-0.3034,-0.3879,-0.2296,1
+placebo,closure_observed,1,-0.1914,-0.1914,-0.1914,1
